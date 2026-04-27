@@ -42,6 +42,6 @@ jobs:
       - name: Run integration tests (best effort)
         timeout-minutes: 3
         run: |
-          if ! timeout 2m flutter test integration_test -d linux; then
+          if ! timeout 2m flutter test integration_test -d linux > /tmp/integration_test.log 2>&1; then
             echo "::warning::Integration tests failed or timed out; continuing CI because this stage is non-blocking."
           fi
