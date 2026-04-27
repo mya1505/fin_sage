@@ -1,0 +1,21 @@
+# Flutter
+.dart_tool/
+.packages
+.pub/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Native/generated
+android/.gradle/
+android/local.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/.last_build_id
+
+# Keystore
+android/app/*.keystore
+android/app/fin_sage.keystore
