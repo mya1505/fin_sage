@@ -7,12 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 const Object _keepError = Object();
 
+enum SettingsOperation { none, backup, preview, restore }
+
 class SettingsState extends Equatable {
   const SettingsState({
     this.themeMode = ThemeMode.system,
     this.locale,
     this.backupInProgress = false,
     this.restorePreview = const [],
+    this.lastCompletedOperation = SettingsOperation.none,
     this.error,
   });
 
@@ -20,6 +23,7 @@ class SettingsState extends Equatable {
   final Locale? locale;
   final bool backupInProgress;
   final List<BackupFileModel> restorePreview;
+  final SettingsOperation lastCompletedOperation;
   final String? error;
 
   SettingsState copyWith({
@@ -28,6 +32,7 @@ class SettingsState extends Equatable {
     bool clearLocale = false,
     bool? backupInProgress,
     List<BackupFileModel>? restorePreview,
+    SettingsOperation? lastCompletedOperation,
     Object? error = _keepError,
   }) {
     return SettingsState(
@@ -35,12 +40,20 @@ class SettingsState extends Equatable {
       locale: clearLocale ? null : locale ?? this.locale,
       backupInProgress: backupInProgress ?? this.backupInProgress,
       restorePreview: restorePreview ?? this.restorePreview,
+      lastCompletedOperation: lastCompletedOperation ?? this.lastCompletedOperation,
       error: identical(error, _keepError) ? this.error : error as String?,
     );
   }
 
   @override
-  List<Object?> get props => [themeMode, locale, backupInProgress, restorePreview, error];
+  List<Object?> get props => [
+        themeMode,
+        locale,
+        backupInProgress,
+        restorePreview,
+        lastCompletedOperation,
+        error,
+      ];
 }
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -53,7 +66,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       final mode = await _settingsStorage.loadThemeMode();
       final locale = await _settingsStorage.loadLocale();
-      emit(state.copyWith(themeMode: mode, locale: locale, error: null));
+      emit(
+        state.copyWith(
+          themeMode: mode,
+          locale: locale,
+          lastCompletedOperation: SettingsOperation.none,
+          error: null,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -85,30 +105,64 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> backupNow() async {
-    emit(state.copyWith(backupInProgress: true, error: null));
+    emit(
+      state.copyWith(
+        backupInProgress: true,
+        lastCompletedOperation: SettingsOperation.none,
+        error: null,
+      ),
+    );
     try {
       await _repo.backupNow();
-      emit(state.copyWith(backupInProgress: false));
+      emit(
+        state.copyWith(
+          backupInProgress: false,
+          lastCompletedOperation: SettingsOperation.backup,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(backupInProgress: false, error: e.toString()));
     }
   }
 
   Future<void> loadRestorePreview() async {
-    emit(state.copyWith(backupInProgress: true, error: null));
+    emit(
+      state.copyWith(
+        backupInProgress: true,
+        lastCompletedOperation: SettingsOperation.none,
+        error: null,
+      ),
+    );
     try {
       final preview = await _repo.restorePreview();
-      emit(state.copyWith(backupInProgress: false, restorePreview: preview));
+      emit(
+        state.copyWith(
+          backupInProgress: false,
+          restorePreview: preview,
+          lastCompletedOperation: SettingsOperation.preview,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(backupInProgress: false, error: e.toString()));
     }
   }
 
   Future<void> restoreByFileId(String fileId) async {
-    emit(state.copyWith(backupInProgress: true, error: null));
+    emit(
+      state.copyWith(
+        backupInProgress: true,
+        lastCompletedOperation: SettingsOperation.none,
+        error: null,
+      ),
+    );
     try {
       await _repo.restoreFromFile(fileId);
-      emit(state.copyWith(backupInProgress: false));
+      emit(
+        state.copyWith(
+          backupInProgress: false,
+          lastCompletedOperation: SettingsOperation.restore,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(backupInProgress: false, error: e.toString()));
     }

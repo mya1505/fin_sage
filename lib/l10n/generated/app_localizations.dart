@@ -26,6 +26,8 @@ class AppLocalizations {
       'totalBalance': 'Total Balance',
       'monthlyIncome': 'Monthly Income',
       'monthlyExpense': 'Monthly Expense',
+      'monthlyTransactions': 'Monthly Transactions',
+      'recentTransactions': 'Recent Transactions',
       'transactionsTitle': 'Transactions',
       'budgetsTitle': 'Budgets',
       'reportsTitle': 'Reports',
@@ -35,6 +37,9 @@ class AppLocalizations {
       'titleLabel': 'Title',
       'amountLabel': 'Amount',
       'dateLabel': 'Date',
+      'transactionTypeLabel': 'Transaction Type',
+      'incomeType': 'Income',
+      'expenseType': 'Expense',
       'saveLabel': 'Save',
       'requiredField': 'This field is required',
       'amountRequired': 'Amount is required',
@@ -55,7 +60,15 @@ class AppLocalizations {
       'englishLanguage': 'English',
       'indonesianLanguage': 'Indonesian',
       'backupNow': 'Backup Now',
-      'restorePreview': 'Restore Preview'
+      'restorePreview': 'Restore Preview',
+      'noBackupFiles': 'No backup files found',
+      'backupCompleted': 'Backup completed successfully',
+      'restorePreviewLoaded': 'Restore preview loaded',
+      'restoreCompleted': 'Restore completed successfully',
+      'restoreConfirmTitle': 'Confirm Restore',
+      'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
+      'cancelLabel': 'Cancel',
+      'restoreActionLabel': 'Restore'
     },
     'id': {
       'appTitle': 'FinSage',
@@ -64,6 +77,8 @@ class AppLocalizations {
       'totalBalance': 'Total Saldo',
       'monthlyIncome': 'Pemasukan Bulanan',
       'monthlyExpense': 'Pengeluaran Bulanan',
+      'monthlyTransactions': 'Transaksi Bulanan',
+      'recentTransactions': 'Transaksi Terbaru',
       'transactionsTitle': 'Transaksi',
       'budgetsTitle': 'Anggaran',
       'reportsTitle': 'Laporan',
@@ -73,6 +88,9 @@ class AppLocalizations {
       'titleLabel': 'Judul',
       'amountLabel': 'Jumlah',
       'dateLabel': 'Tanggal',
+      'transactionTypeLabel': 'Tipe Transaksi',
+      'incomeType': 'Pemasukan',
+      'expenseType': 'Pengeluaran',
       'saveLabel': 'Simpan',
       'requiredField': 'Kolom ini wajib diisi',
       'amountRequired': 'Jumlah wajib diisi',
@@ -93,7 +111,15 @@ class AppLocalizations {
       'englishLanguage': 'Inggris',
       'indonesianLanguage': 'Indonesia',
       'backupNow': 'Backup Sekarang',
-      'restorePreview': 'Pratinjau Restore'
+      'restorePreview': 'Pratinjau Restore',
+      'noBackupFiles': 'Belum ada file backup',
+      'backupCompleted': 'Backup berhasil',
+      'restorePreviewLoaded': 'Pratinjau restore berhasil dimuat',
+      'restoreCompleted': 'Restore berhasil',
+      'restoreConfirmTitle': 'Konfirmasi Restore',
+      'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
+      'cancelLabel': 'Batal',
+      'restoreActionLabel': 'Restore'
     }
   };
 
@@ -105,6 +131,8 @@ class AppLocalizations {
   String get totalBalance => _t('totalBalance');
   String get monthlyIncome => _t('monthlyIncome');
   String get monthlyExpense => _t('monthlyExpense');
+  String get monthlyTransactions => _t('monthlyTransactions');
+  String get recentTransactions => _t('recentTransactions');
   String get transactionsTitle => _t('transactionsTitle');
   String get budgetsTitle => _t('budgetsTitle');
   String get reportsTitle => _t('reportsTitle');
@@ -114,6 +142,9 @@ class AppLocalizations {
   String get titleLabel => _t('titleLabel');
   String get amountLabel => _t('amountLabel');
   String get dateLabel => _t('dateLabel');
+  String get transactionTypeLabel => _t('transactionTypeLabel');
+  String get incomeType => _t('incomeType');
+  String get expenseType => _t('expenseType');
   String get saveLabel => _t('saveLabel');
   String get requiredField => _t('requiredField');
   String get amountRequired => _t('amountRequired');
@@ -135,6 +166,14 @@ class AppLocalizations {
   String get indonesianLanguage => _t('indonesianLanguage');
   String get backupNow => _t('backupNow');
   String get restorePreview => _t('restorePreview');
+  String get noBackupFiles => _t('noBackupFiles');
+  String get backupCompleted => _t('backupCompleted');
+  String get restorePreviewLoaded => _t('restorePreviewLoaded');
+  String get restoreCompleted => _t('restoreCompleted');
+  String get restoreConfirmTitle => _t('restoreConfirmTitle');
+  String get restoreConfirmBody => _t('restoreConfirmBody');
+  String get cancelLabel => _t('cancelLabel');
+  String get restoreActionLabel => _t('restoreActionLabel');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

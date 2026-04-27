@@ -17,7 +17,41 @@ class SettingsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.settingsTitle)),
         body: SafeArea(
-          child: BlocBuilder<SettingsCubit, SettingsState>(
+          child: BlocConsumer<SettingsCubit, SettingsState>(
+            listenWhen: (previous, current) =>
+                previous.error != current.error ||
+                previous.lastCompletedOperation != current.lastCompletedOperation,
+            listener: (context, state) {
+              final messenger = ScaffoldMessenger.of(context);
+              if (state.error != null) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(state.error!),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                  ),
+                );
+                return;
+              }
+
+              String? message;
+              switch (state.lastCompletedOperation) {
+                case SettingsOperation.backup:
+                  message = l10n.backupCompleted;
+                  break;
+                case SettingsOperation.preview:
+                  message = l10n.restorePreviewLoaded;
+                  break;
+                case SettingsOperation.restore:
+                  message = l10n.restoreCompleted;
+                  break;
+                case SettingsOperation.none:
+                  break;
+              }
+
+              if (message != null) {
+                messenger.showSnackBar(SnackBar(content: Text(message)));
+              }
+            },
             builder: (context, state) {
               final cubit = context.read<SettingsCubit>();
 
@@ -67,27 +101,22 @@ class SettingsPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   Lottie.asset(LottiePlaceholders.backupAnimation, height: 140),
                   const SizedBox(height: 12),
-                  ...state.restorePreview.map((file) {
-                    final createdAt = file.createdAt?.toIso8601String() ?? '-';
-                    return Card(
-                      child: ListTile(
-                        title: Text(file.name),
-                        subtitle: Text('$createdAt • ${file.size} bytes'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.download),
-                          onPressed: () => cubit.restoreByFileId(file.id),
+                  if (state.restorePreview.isEmpty)
+                    Text(l10n.noBackupFiles)
+                  else
+                    ...state.restorePreview.map((file) {
+                      final createdAt = file.createdAt?.toIso8601String() ?? '-';
+                      return Card(
+                        child: ListTile(
+                          title: Text(file.name),
+                          subtitle: Text('$createdAt • ${file.size} bytes'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.download),
+                            onPressed: () => _confirmRestore(context, file.id),
+                          ),
                         ),
-                      ),
-                    );
-                  }),
-                  if (state.error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        state.error!,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
-                      ),
-                    ),
+                      );
+                    }),
                 ],
               );
             },
@@ -95,5 +124,32 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmRestore(BuildContext context, String fileId) async {
+    final l10n = AppLocalizations.of(context)!;
+    final shouldRestore = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.restoreConfirmTitle),
+          content: Text(l10n.restoreConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.restoreActionLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldRestore == true) {
+      await context.read<SettingsCubit>().restoreByFileId(fileId);
+    }
   }
 }

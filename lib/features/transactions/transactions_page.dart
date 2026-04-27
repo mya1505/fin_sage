@@ -1,6 +1,8 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/core/utils/validators.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
+import 'package:fin_sage/data/models/category_model.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
@@ -44,15 +46,24 @@ class TransactionsPage extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (_, index) {
                   final tx = state.items[index];
+                  final isIncome = tx.type == TransactionType.income;
+                  final amountColor = isIncome ? Colors.green.shade700 : Theme.of(context).colorScheme.error;
+                  final categoryName = _categoryNameById(state.categories, tx.categoryId);
+                  final locale = Localizations.localeOf(context).toLanguageTag();
                   return ListTile(
                     tileColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     title: Text(tx.title),
-                    subtitle: Text(tx.date.toIso8601String().split('T').first),
+                    subtitle: Text(
+                      '${tx.date.toIso8601String().split('T').first} • $categoryName • ${isIncome ? l10n.incomeType : l10n.expenseType}',
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(tx.amount.toStringAsFixed(2)),
+                        Text(
+                          '${isIncome ? '+' : '-'}${tx.amount.toCurrency(locale)}',
+                          style: TextStyle(color: amountColor, fontWeight: FontWeight.w700),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline),
                           onPressed: tx.id == null
@@ -77,6 +88,10 @@ class TransactionsPage extends StatelessWidget {
     final titleCtrl = TextEditingController();
     final amountCtrl = TextEditingController();
     DateTime selectedDate = DateTime.now();
+    TransactionType selectedType = TransactionType.expense;
+    final state = context.read<TransactionCubit>().state;
+    final categories = state.categories;
+    int selectedCategoryId = categories.isNotEmpty ? (categories.first.id ?? 1) : 1;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -111,6 +126,51 @@ class TransactionsPage extends StatelessWidget {
                         return _errorFromCode(l10n, code);
                       },
                     ),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(l10n.transactionTypeLabel),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: Text(l10n.expenseType),
+                          selected: selectedType == TransactionType.expense,
+                          onSelected: (_) => setState(() => selectedType = TransactionType.expense),
+                        ),
+                        ChoiceChip(
+                          label: Text(l10n.incomeType),
+                          selected: selectedType == TransactionType.income,
+                          onSelected: (_) => setState(() => selectedType = TransactionType.income),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    if (categories.isNotEmpty)
+                      DropdownButtonFormField<int>(
+                        value: selectedCategoryId,
+                        decoration: InputDecoration(labelText: l10n.categoryLabel),
+                        items: categories
+                            .map(
+                              (category) => DropdownMenuItem<int>(
+                                value: category.id ?? 1,
+                                child: Text(category.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() => selectedCategoryId = value);
+                          }
+                        },
+                      )
+                    else
+                      TextFormField(
+                        enabled: false,
+                        decoration: InputDecoration(labelText: l10n.categoryLabel, hintText: 'General'),
+                      ),
                     const SizedBox(height: 12),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -163,8 +223,8 @@ class TransactionsPage extends StatelessWidget {
                                 title: titleCtrl.text.trim(),
                                 amount: double.parse(amountCtrl.text.replaceAll(',', '.')),
                                 date: selectedDate,
-                                categoryId: 1,
-                                type: TransactionType.expense,
+                                categoryId: selectedCategoryId,
+                                type: selectedType,
                               ),
                             );
                         Navigator.pop(sheetContext);
@@ -198,5 +258,14 @@ class TransactionsPage extends StatelessWidget {
       default:
         return null;
     }
+  }
+
+  String _categoryNameById(List<CategoryModel> categories, int id) {
+    for (final category in categories) {
+      if (category.id == id) {
+        return category.name;
+      }
+    }
+    return 'General';
   }
 }

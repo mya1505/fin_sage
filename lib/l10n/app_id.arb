@@ -6,6 +6,8 @@
   "totalBalance": "Total Saldo",
   "monthlyIncome": "Pemasukan Bulanan",
   "monthlyExpense": "Pengeluaran Bulanan",
+  "monthlyTransactions": "Transaksi Bulanan",
+  "recentTransactions": "Transaksi Terbaru",
   "transactionsTitle": "Transaksi",
   "budgetsTitle": "Anggaran",
   "reportsTitle": "Laporan",
@@ -15,6 +17,9 @@
   "titleLabel": "Judul",
   "amountLabel": "Jumlah",
   "dateLabel": "Tanggal",
+  "transactionTypeLabel": "Tipe Transaksi",
+  "incomeType": "Pemasukan",
+  "expenseType": "Pengeluaran",
   "saveLabel": "Simpan",
   "requiredField": "Kolom ini wajib diisi",
   "amountRequired": "Jumlah wajib diisi",
@@ -35,5 +40,13 @@
   "englishLanguage": "Inggris",
   "indonesianLanguage": "Indonesia",
   "backupNow": "Backup Sekarang",
-  "restorePreview": "Pratinjau Restore"
+  "restorePreview": "Pratinjau Restore",
+  "noBackupFiles": "Belum ada file backup",
+  "backupCompleted": "Backup berhasil",
+  "restorePreviewLoaded": "Pratinjau restore berhasil dimuat",
+  "restoreCompleted": "Restore berhasil",
+  "restoreConfirmTitle": "Konfirmasi Restore",
+  "restoreConfirmBody": "Restore backup akan menimpa data lokal. Lanjutkan?",
+  "cancelLabel": "Batal",
+  "restoreActionLabel": "Restore"
 }

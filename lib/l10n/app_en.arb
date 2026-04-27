@@ -6,6 +6,8 @@
   "totalBalance": "Total Balance",
   "monthlyIncome": "Monthly Income",
   "monthlyExpense": "Monthly Expense",
+  "monthlyTransactions": "Monthly Transactions",
+  "recentTransactions": "Recent Transactions",
   "transactionsTitle": "Transactions",
   "budgetsTitle": "Budgets",
   "reportsTitle": "Reports",
@@ -15,6 +17,9 @@
   "titleLabel": "Title",
   "amountLabel": "Amount",
   "dateLabel": "Date",
+  "transactionTypeLabel": "Transaction Type",
+  "incomeType": "Income",
+  "expenseType": "Expense",
   "saveLabel": "Save",
   "requiredField": "This field is required",
   "amountRequired": "Amount is required",
@@ -35,5 +40,13 @@
   "englishLanguage": "English",
   "indonesianLanguage": "Indonesian",
   "backupNow": "Backup Now",
-  "restorePreview": "Restore Preview"
+  "restorePreview": "Restore Preview",
+  "noBackupFiles": "No backup files found",
+  "backupCompleted": "Backup completed successfully",
+  "restorePreviewLoaded": "Restore preview loaded",
+  "restoreCompleted": "Restore completed successfully",
+  "restoreConfirmTitle": "Confirm Restore",
+  "restoreConfirmBody": "Restoring backup will overwrite local data. Continue?",
+  "cancelLabel": "Cancel",
+  "restoreActionLabel": "Restore"
 }

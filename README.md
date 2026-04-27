@@ -29,6 +29,9 @@ Lihat folder `lib/` untuk pembagian:
 - Restore backup menampilkan preview file berbasis model type-safe (`BackupFileModel`).
 - Preference tema dan bahasa disimpan lokal (`SharedPreferences`) dan dipulihkan saat startup.
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
+- Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
+- Form transaksi mendukung tipe `income/expense` dan pemilihan kategori.
+- Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup
 
