@@ -34,9 +34,12 @@ class AppLocalizations {
       'settingsTitle': 'Settings',
       'addTransaction': 'Add Transaction',
       'emptyTransactions': 'No transactions yet',
+      'searchTransactions': 'Search transactions',
+      'noMatchingTransactions': 'No matching transactions',
       'titleLabel': 'Title',
       'amountLabel': 'Amount',
       'dateLabel': 'Date',
+      'allType': 'All',
       'transactionTypeLabel': 'Transaction Type',
       'incomeType': 'Income',
       'expenseType': 'Expense',
@@ -67,7 +70,10 @@ class AppLocalizations {
       'restoreCompleted': 'Restore completed successfully',
       'restoreConfirmTitle': 'Confirm Restore',
       'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
+      'confirmDeleteTitle': 'Delete Transaction',
+      'confirmDeleteBody': 'This transaction will be permanently removed. Continue?',
       'cancelLabel': 'Cancel',
+      'deleteActionLabel': 'Delete',
       'restoreActionLabel': 'Restore'
     },
     'id': {
@@ -85,9 +91,12 @@ class AppLocalizations {
       'settingsTitle': 'Pengaturan',
       'addTransaction': 'Tambah Transaksi',
       'emptyTransactions': 'Belum ada transaksi',
+      'searchTransactions': 'Cari transaksi',
+      'noMatchingTransactions': 'Tidak ada transaksi yang cocok',
       'titleLabel': 'Judul',
       'amountLabel': 'Jumlah',
       'dateLabel': 'Tanggal',
+      'allType': 'Semua',
       'transactionTypeLabel': 'Tipe Transaksi',
       'incomeType': 'Pemasukan',
       'expenseType': 'Pengeluaran',
@@ -118,7 +127,10 @@ class AppLocalizations {
       'restoreCompleted': 'Restore berhasil',
       'restoreConfirmTitle': 'Konfirmasi Restore',
       'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
+      'confirmDeleteTitle': 'Hapus Transaksi',
+      'confirmDeleteBody': 'Transaksi ini akan dihapus permanen. Lanjutkan?',
       'cancelLabel': 'Batal',
+      'deleteActionLabel': 'Hapus',
       'restoreActionLabel': 'Restore'
     }
   };
@@ -139,9 +151,12 @@ class AppLocalizations {
   String get settingsTitle => _t('settingsTitle');
   String get addTransaction => _t('addTransaction');
   String get emptyTransactions => _t('emptyTransactions');
+  String get searchTransactions => _t('searchTransactions');
+  String get noMatchingTransactions => _t('noMatchingTransactions');
   String get titleLabel => _t('titleLabel');
   String get amountLabel => _t('amountLabel');
   String get dateLabel => _t('dateLabel');
+  String get allType => _t('allType');
   String get transactionTypeLabel => _t('transactionTypeLabel');
   String get incomeType => _t('incomeType');
   String get expenseType => _t('expenseType');
@@ -173,6 +188,9 @@ class AppLocalizations {
   String get restoreConfirmTitle => _t('restoreConfirmTitle');
   String get restoreConfirmBody => _t('restoreConfirmBody');
   String get cancelLabel => _t('cancelLabel');
+  String get deleteActionLabel => _t('deleteActionLabel');
+  String get confirmDeleteTitle => _t('confirmDeleteTitle');
+  String get confirmDeleteBody => _t('confirmDeleteBody');
   String get restoreActionLabel => _t('restoreActionLabel');
 }
 

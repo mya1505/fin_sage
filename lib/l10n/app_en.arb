@@ -14,9 +14,12 @@
   "settingsTitle": "Settings",
   "addTransaction": "Add Transaction",
   "emptyTransactions": "No transactions yet",
+  "searchTransactions": "Search transactions",
+  "noMatchingTransactions": "No matching transactions",
   "titleLabel": "Title",
   "amountLabel": "Amount",
   "dateLabel": "Date",
+  "allType": "All",
   "transactionTypeLabel": "Transaction Type",
   "incomeType": "Income",
   "expenseType": "Expense",
@@ -47,6 +50,9 @@
   "restoreCompleted": "Restore completed successfully",
   "restoreConfirmTitle": "Confirm Restore",
   "restoreConfirmBody": "Restoring backup will overwrite local data. Continue?",
+  "confirmDeleteTitle": "Delete Transaction",
+  "confirmDeleteBody": "This transaction will be permanently removed. Continue?",
   "cancelLabel": "Cancel",
+  "deleteActionLabel": "Delete",
   "restoreActionLabel": "Restore"
 }

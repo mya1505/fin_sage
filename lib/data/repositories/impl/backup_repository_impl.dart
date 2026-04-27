@@ -19,7 +19,7 @@ class BackupRepositoryImpl implements BackupRepository {
   @override
   Future<List<BackupFileModel>> restorePreview() async {
     final files = await _remote.listBackups();
-    return files
+    final mapped = files
         .where((e) => e.id != null && e.id!.isNotEmpty)
         .map(
           (e) => BackupFileModel(
@@ -30,6 +30,12 @@ class BackupRepositoryImpl implements BackupRepository {
           ),
         )
         .toList();
+    mapped.sort((a, b) {
+      final aTime = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bTime.compareTo(aTime);
+    });
+    return mapped;
   }
 
   @override

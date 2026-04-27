@@ -14,9 +14,12 @@
   "settingsTitle": "Pengaturan",
   "addTransaction": "Tambah Transaksi",
   "emptyTransactions": "Belum ada transaksi",
+  "searchTransactions": "Cari transaksi",
+  "noMatchingTransactions": "Tidak ada transaksi yang cocok",
   "titleLabel": "Judul",
   "amountLabel": "Jumlah",
   "dateLabel": "Tanggal",
+  "allType": "Semua",
   "transactionTypeLabel": "Tipe Transaksi",
   "incomeType": "Pemasukan",
   "expenseType": "Pengeluaran",
@@ -47,6 +50,9 @@
   "restoreCompleted": "Restore berhasil",
   "restoreConfirmTitle": "Konfirmasi Restore",
   "restoreConfirmBody": "Restore backup akan menimpa data lokal. Lanjutkan?",
+  "confirmDeleteTitle": "Hapus Transaksi",
+  "confirmDeleteBody": "Transaksi ini akan dihapus permanen. Lanjutkan?",
   "cancelLabel": "Batal",
+  "deleteActionLabel": "Hapus",
   "restoreActionLabel": "Restore"
 }

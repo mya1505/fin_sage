@@ -77,6 +77,19 @@ class DashboardPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (state.error != null) ...[
+                        const SizedBox(height: 12),
+                        Card(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          child: ListTile(
+                            title: Text(state.error!),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.refresh),
+                              onPressed: () => context.read<DashboardCubit>().loadOverview(),
+                            ),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       AnimatedBalanceChart(spots: spots),
                       const SizedBox(height: 16),

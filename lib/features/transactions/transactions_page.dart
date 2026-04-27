@@ -9,8 +9,24 @@ import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TransactionsPage extends StatelessWidget {
+enum _TransactionFilter { all, income, expense }
+
+class TransactionsPage extends StatefulWidget {
   const TransactionsPage({super.key});
+
+  @override
+  State<TransactionsPage> createState() => _TransactionsPageState();
+}
+
+class _TransactionsPageState extends State<TransactionsPage> {
+  final TextEditingController _searchController = TextEditingController();
+  _TransactionFilter _filter = _TransactionFilter.all;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,50 +52,170 @@ class TransactionsPage extends StatelessWidget {
                 );
               }
 
+              final filteredItems = _applyFilters(state.items);
+
               if (state.items.isEmpty) {
                 return Center(child: Text(l10n.emptyTransactions));
               }
 
-              return ListView.separated(
+              final locale = Localizations.localeOf(context).toLanguageTag();
+              final incomeTotal = filteredItems
+                  .where((tx) => tx.type == TransactionType.income)
+                  .fold<double>(0, (sum, tx) => sum + tx.amount);
+              final expenseTotal = filteredItems
+                  .where((tx) => tx.type == TransactionType.expense)
+                  .fold<double>(0, (sum, tx) => sum + tx.amount);
+
+              return ListView(
                 padding: const EdgeInsets.all(16),
-                itemCount: state.items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (_, index) {
-                  final tx = state.items[index];
-                  final isIncome = tx.type == TransactionType.income;
-                  final amountColor = isIncome ? Colors.green.shade700 : Theme.of(context).colorScheme.error;
-                  final categoryName = _categoryNameById(state.categories, tx.categoryId);
-                  final locale = Localizations.localeOf(context).toLanguageTag();
-                  return ListTile(
-                    tileColor: Theme.of(context).colorScheme.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    title: Text(tx.title),
-                    subtitle: Text(
-                      '${tx.date.toIso8601String().split('T').first} • $categoryName • ${isIncome ? l10n.incomeType : l10n.expenseType}',
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.search),
+                      hintText: l10n.searchTransactions,
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${isIncome ? '+' : '-'}${tx.amount.toCurrency(locale)}',
-                          style: TextStyle(color: amountColor, fontWeight: FontWeight.w700),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: tx.id == null
-                              ? null
-                              : () => context.read<TransactionCubit>().removeTransaction(tx.id!),
-                        ),
-                      ],
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _FilterChip(
+                        label: l10n.allType,
+                        active: _filter == _TransactionFilter.all,
+                        onTap: () => setState(() => _filter = _TransactionFilter.all),
+                      ),
+                      const SizedBox(width: 8),
+                      _FilterChip(
+                        label: l10n.incomeType,
+                        active: _filter == _TransactionFilter.income,
+                        onTap: () => setState(() => _filter = _TransactionFilter.income),
+                      ),
+                      const SizedBox(width: 8),
+                      _FilterChip(
+                        label: l10n.expenseType,
+                        active: _filter == _TransactionFilter.expense,
+                        onTap: () => setState(() => _filter = _TransactionFilter.expense),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.monthlyIncome),
+                          Text(
+                            incomeTotal.toCurrency(locale),
+                            style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(l10n.monthlyExpense),
+                          Text(
+                            expenseTotal.toCurrency(locale),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 10),
+                  if (filteredItems.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Center(child: Text(l10n.noMatchingTransactions)),
+                    )
+                  else
+                    ...filteredItems.map((tx) {
+                      final isIncome = tx.type == TransactionType.income;
+                      final amountColor = isIncome ? Colors.green.shade700 : Theme.of(context).colorScheme.error;
+                      final categoryName = _categoryNameById(state.categories, tx.categoryId);
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ListTile(
+                          tileColor: Theme.of(context).colorScheme.surface,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          title: Text(tx.title),
+                          subtitle: Text(
+                            '${tx.date.toIso8601String().split('T').first} • $categoryName • ${isIncome ? l10n.incomeType : l10n.expenseType}',
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${isIncome ? '+' : '-'}${tx.amount.toCurrency(locale)}',
+                                style: TextStyle(color: amountColor, fontWeight: FontWeight.w700),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: tx.id == null ? null : () => _confirmDelete(context, tx.id!),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                ],
               );
             },
           ),
         ),
       ),
     );
+  }
+
+  List<TransactionModel> _applyFilters(List<TransactionModel> items) {
+    final query = _searchController.text.trim().toLowerCase();
+    return items.where((tx) {
+      final typeMatch = switch (_filter) {
+        _TransactionFilter.all => true,
+        _TransactionFilter.income => tx.type == TransactionType.income,
+        _TransactionFilter.expense => tx.type == TransactionType.expense,
+      };
+
+      if (!typeMatch) {
+        return false;
+      }
+
+      if (query.isEmpty) {
+        return true;
+      }
+
+      return tx.title.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  Future<void> _confirmDelete(BuildContext context, int id) async {
+    final l10n = AppLocalizations.of(context)!;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.confirmDeleteTitle),
+          content: Text(l10n.confirmDeleteBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.deleteActionLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (approved == true && context.mounted) {
+      await context.read<TransactionCubit>().removeTransaction(id);
+    }
   }
 
   Future<void> _showCreateForm(BuildContext context) async {
@@ -267,5 +403,26 @@ class TransactionsPage extends StatelessWidget {
       }
     }
     return 'General';
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: active,
+      onSelected: (_) => onTap(),
+    );
   }
 }
