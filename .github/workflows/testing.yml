@@ -34,10 +34,10 @@ jobs:
       - name: Run unit/widget tests
         run: flutter test
 
-      - name: Prepare web platform for integration tests
+      - name: Prepare linux platform for integration tests
         run: |
-          flutter config --enable-web
-          flutter create . --platforms=web
+          flutter config --enable-linux-desktop
+          flutter create . --platforms=linux
 
       - name: Run integration tests
-        run: flutter test integration_test -d chrome
+        run: flutter test integration_test -d linux
