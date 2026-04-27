@@ -40,6 +40,8 @@ jobs:
           flutter create . --platforms=linux
 
       - name: Run integration tests (best effort)
-        continue-on-error: true
         timeout-minutes: 3
-        run: timeout 2m flutter test integration_test -d linux
+        run: |
+          if ! timeout 2m flutter test integration_test -d linux; then
+            echo "::warning::Integration tests failed or timed out; continuing CI because this stage is non-blocking."
+          fi
