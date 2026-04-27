@@ -57,7 +57,7 @@ class FinSageApp extends StatelessWidget {
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: settingsState.themeMode,
-            initialRoute: AppRoutes.dashboard,
+            initialRoute: AppRoutes.root,
             onGenerateRoute: AppRoutes.onGenerateRoute,
             localizationsDelegates: const [
               AppLocalizations.delegate,

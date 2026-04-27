@@ -1,7 +1,10 @@
+import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+const Object _keepError = Object();
 
 class SettingsState extends Equatable {
   const SettingsState({
@@ -13,20 +16,20 @@ class SettingsState extends Equatable {
 
   final ThemeMode themeMode;
   final bool backupInProgress;
-  final List<String> restorePreview;
+  final List<BackupFileModel> restorePreview;
   final String? error;
 
   SettingsState copyWith({
     ThemeMode? themeMode,
     bool? backupInProgress,
-    List<String>? restorePreview,
-    String? error,
+    List<BackupFileModel>? restorePreview,
+    Object? error = _keepError,
   }) {
     return SettingsState(
       themeMode: themeMode ?? this.themeMode,
       backupInProgress: backupInProgress ?? this.backupInProgress,
       restorePreview: restorePreview ?? this.restorePreview,
-      error: error,
+      error: identical(error, _keepError) ? this.error : error as String?,
     );
   }
 

@@ -1,4 +1,3 @@
-import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/core/widgets/haptic_button.dart';
@@ -19,12 +18,7 @@ class AuthPage extends StatelessWidget {
     return ErrorBoundary(
       child: Scaffold(
         body: SafeArea(
-          child: BlocConsumer<AuthCubit, AuthState>(
-            listener: (context, state) {
-              if (state.status == AuthStatus.authenticated) {
-                Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-              }
-            },
+          child: BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
               return Padding(
                 padding: const EdgeInsets.all(24),

@@ -1,5 +1,6 @@
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
+import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 
 class BackupRepositoryImpl implements BackupRepository {
@@ -16,10 +17,18 @@ class BackupRepositoryImpl implements BackupRepository {
   }
 
   @override
-  Future<List<String>> restorePreview() async {
+  Future<List<BackupFileModel>> restorePreview() async {
     final files = await _remote.listBackups();
     return files
-        .map((e) => '${e.id ?? ''}|${e.name ?? ''}|${e.createdTime?.toIso8601String() ?? ''}|${e.size ?? 0}')
+        .where((e) => e.id != null && e.id!.isNotEmpty)
+        .map(
+          (e) => BackupFileModel(
+            id: e.id!,
+            name: e.name ?? 'backup.db',
+            createdAt: e.createdTime,
+            size: e.size ?? 0,
+          ),
+        )
         .toList();
   }
 

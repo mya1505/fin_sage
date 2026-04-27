@@ -47,18 +47,15 @@ class SettingsPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   Lottie.asset(LottiePlaceholders.backupAnimation, height: 140),
                   const SizedBox(height: 12),
-                  ...state.restorePreview.map((line) {
-                    final parts = line.split('|');
-                    final fileId = parts.isNotEmpty ? parts[0] : '';
-                    final fileName = parts.length > 1 ? parts[1] : '-';
-                    final createdAt = parts.length > 2 ? parts[2] : '-';
+                  ...state.restorePreview.map((file) {
+                    final createdAt = file.createdAt?.toIso8601String() ?? '-';
                     return Card(
                       child: ListTile(
-                        title: Text(fileName),
-                        subtitle: Text(createdAt),
+                        title: Text(file.name),
+                        subtitle: Text('$createdAt • ${file.size} bytes'),
                         trailing: IconButton(
                           icon: const Icon(Icons.download),
-                          onPressed: fileId.isEmpty ? null : () => cubit.restoreByFileId(fileId),
+                          onPressed: () => cubit.restoreByFileId(file.id),
                         ),
                       ),
                     );

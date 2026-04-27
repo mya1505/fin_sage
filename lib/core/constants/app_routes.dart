@@ -1,4 +1,5 @@
 import 'package:fin_sage/features/auth/auth_page.dart';
+import 'package:fin_sage/features/auth/auth_gate_page.dart';
 import 'package:fin_sage/features/budgets/budgets_page.dart';
 import 'package:fin_sage/features/dashboard/dashboard_page.dart';
 import 'package:fin_sage/features/reports/reports_page.dart';
@@ -7,6 +8,7 @@ import 'package:fin_sage/features/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
+  static const String root = '/';
   static const String auth = '/auth';
   static const String dashboard = '/dashboard';
   static const String transactions = '/transactions';
@@ -16,6 +18,8 @@ class AppRoutes {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case root:
+        return _material(const AuthGatePage());
       case auth:
         return _material(const AuthPage());
       case dashboard:
@@ -29,7 +33,7 @@ class AppRoutes {
       case settings:
         return _material(const SettingsPage());
       default:
-        return _material(const DashboardPage());
+        return _material(const AuthGatePage());
     }
   }
 

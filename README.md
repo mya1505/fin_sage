@@ -20,16 +20,21 @@ Lihat folder `lib/` untuk pembagian:
 - `data/`: models, repositories, datasources
 - `logic/`: cubits per fitur
 
+## Alur Aplikasi
+
+- Route awal memakai auth gate (`/`) yang memvalidasi status login Google.
+- Pengguna belum login diarahkan ke halaman auth.
+- Pengguna login langsung masuk ke dashboard.
+- Restore backup menampilkan preview file berbasis model type-safe (`BackupFileModel`).
+
 ## Setup
 
 1. Konfigurasi Android keystore sesuai [keystore_instructions.md](keystore_instructions.md)
 2. Siapkan Google Sign-In di Android/iOS
 3. Commit dan push ke GitHub branch `main`
-4. CI GitHub Actions akan menjalankan:
-   - `flutter test`
-   - `flutter build apk --release`
-   - signing APK dari secrets
-   - publish GitHub Release saat push tag `vX.Y.Z`
+4. Workflow GitHub Actions:
+   - `testing.yml`: jalan saat `push` ke `main` (unit/widget/integration tests)
+   - `release.yml`: jalan saat push tag `vX.Y.Z` (build release + publish GitHub Release)
 
 ## Screenshots (Placeholder)
 
