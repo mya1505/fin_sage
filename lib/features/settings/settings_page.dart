@@ -32,6 +32,26 @@ class SettingsPage extends StatelessWidget {
                       onChanged: (value) => cubit.setThemeMode(value ? ThemeMode.dark : ThemeMode.light),
                     ),
                   ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.languageLabel),
+                    trailing: DropdownButton<String>(
+                      isDense: true,
+                      value: state.locale?.languageCode ?? 'system',
+                      onChanged: (value) {
+                        if (value == null || value == 'system') {
+                          cubit.setLocale(null);
+                          return;
+                        }
+                        cubit.setLocale(Locale(value));
+                      },
+                      items: [
+                        DropdownMenuItem(value: 'system', child: Text(l10n.systemDefault)),
+                        DropdownMenuItem(value: 'en', child: Text(l10n.englishLanguage)),
+                        DropdownMenuItem(value: 'id', child: Text(l10n.indonesianLanguage)),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   FilledButton.icon(
                     onPressed: state.backupInProgress ? null : cubit.backupNow,

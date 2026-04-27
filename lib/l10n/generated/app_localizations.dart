@@ -50,6 +50,10 @@ class AppLocalizations {
       'exportPdf': 'Export PDF',
       'exportCsv': 'Export CSV',
       'darkMode': 'Dark Mode',
+      'languageLabel': 'Language',
+      'systemDefault': 'System Default',
+      'englishLanguage': 'English',
+      'indonesianLanguage': 'Indonesian',
       'backupNow': 'Backup Now',
       'restorePreview': 'Restore Preview'
     },
@@ -84,6 +88,10 @@ class AppLocalizations {
       'exportPdf': 'Ekspor PDF',
       'exportCsv': 'Ekspor CSV',
       'darkMode': 'Mode Gelap',
+      'languageLabel': 'Bahasa',
+      'systemDefault': 'Ikuti Sistem',
+      'englishLanguage': 'Inggris',
+      'indonesianLanguage': 'Indonesia',
       'backupNow': 'Backup Sekarang',
       'restorePreview': 'Pratinjau Restore'
     }
@@ -121,6 +129,10 @@ class AppLocalizations {
   String get exportPdf => _t('exportPdf');
   String get exportCsv => _t('exportCsv');
   String get darkMode => _t('darkMode');
+  String get languageLabel => _t('languageLabel');
+  String get systemDefault => _t('systemDefault');
+  String get englishLanguage => _t('englishLanguage');
+  String get indonesianLanguage => _t('indonesianLanguage');
   String get backupNow => _t('backupNow');
   String get restorePreview => _t('restorePreview');
 }

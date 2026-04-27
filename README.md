@@ -7,6 +7,7 @@ FinSage adalah aplikasi manajemen keuangan premium berbasis Flutter dengan arsit
 - Flutter 3.19+ (Null Safety)
 - Bloc/Cubit (`flutter_bloc`)
 - SQLite + Drift (`sqflite`, `sqflite_sqlcipher`, `drift`, `drift_sqflite`)
+- App preferences (`shared_preferences`)
 - Backup Drive (`google_sign_in`, `googleapis`)
 - UI (`fl_chart`, `flutter_svg`, `lottie`, custom painter)
 - Lokalisasi (`intl`, ARB `en/id`, MessageLookup via `AppLocalizations`)
@@ -26,6 +27,8 @@ Lihat folder `lib/` untuk pembagian:
 - Pengguna belum login diarahkan ke halaman auth.
 - Pengguna login langsung masuk ke dashboard.
 - Restore backup menampilkan preview file berbasis model type-safe (`BackupFileModel`).
+- Preference tema dan bahasa disimpan lokal (`SharedPreferences`) dan dipulihkan saat startup.
+- Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
 
 ## Setup
 

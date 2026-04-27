@@ -30,6 +30,10 @@
   "exportPdf": "Ekspor PDF",
   "exportCsv": "Ekspor CSV",
   "darkMode": "Mode Gelap",
+  "languageLabel": "Bahasa",
+  "systemDefault": "Ikuti Sistem",
+  "englishLanguage": "Inggris",
+  "indonesianLanguage": "Indonesia",
   "backupNow": "Backup Sekarang",
   "restorePreview": "Pratinjau Restore"
 }

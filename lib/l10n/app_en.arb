@@ -30,6 +30,10 @@
   "exportPdf": "Export PDF",
   "exportCsv": "Export CSV",
   "darkMode": "Dark Mode",
+  "languageLabel": "Language",
+  "systemDefault": "System Default",
+  "englishLanguage": "English",
+  "indonesianLanguage": "Indonesian",
   "backupNow": "Backup Now",
   "restorePreview": "Restore Preview"
 }

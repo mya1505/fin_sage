@@ -1,3 +1,4 @@
+import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
@@ -9,24 +10,29 @@ const Object _keepError = Object();
 class SettingsState extends Equatable {
   const SettingsState({
     this.themeMode = ThemeMode.system,
+    this.locale,
     this.backupInProgress = false,
     this.restorePreview = const [],
     this.error,
   });
 
   final ThemeMode themeMode;
+  final Locale? locale;
   final bool backupInProgress;
   final List<BackupFileModel> restorePreview;
   final String? error;
 
   SettingsState copyWith({
     ThemeMode? themeMode,
+    Locale? locale,
+    bool clearLocale = false,
     bool? backupInProgress,
     List<BackupFileModel>? restorePreview,
     Object? error = _keepError,
   }) {
     return SettingsState(
       themeMode: themeMode ?? this.themeMode,
+      locale: clearLocale ? null : locale ?? this.locale,
       backupInProgress: backupInProgress ?? this.backupInProgress,
       restorePreview: restorePreview ?? this.restorePreview,
       error: identical(error, _keepError) ? this.error : error as String?,
@@ -34,18 +40,48 @@ class SettingsState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [themeMode, backupInProgress, restorePreview, error];
+  List<Object?> get props => [themeMode, locale, backupInProgress, restorePreview, error];
 }
 
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit(this._repo) : super(const SettingsState());
+  SettingsCubit(this._repo, this._settingsStorage) : super(const SettingsState());
 
   final BackupRepository _repo;
+  final SettingsStorage _settingsStorage;
 
-  Future<void> loadSettings() async {}
+  Future<void> loadSettings() async {
+    try {
+      final mode = await _settingsStorage.loadThemeMode();
+      final locale = await _settingsStorage.loadLocale();
+      emit(state.copyWith(themeMode: mode, locale: locale, error: null));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
 
-  void setThemeMode(ThemeMode mode) {
-    emit(state.copyWith(themeMode: mode));
+  Future<void> setThemeMode(ThemeMode mode) async {
+    emit(state.copyWith(themeMode: mode, error: null));
+    try {
+      await _settingsStorage.saveThemeMode(mode);
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> setLocale(Locale? locale) async {
+    emit(state.copyWith(error: null));
+    try {
+      if (locale == null) {
+        emit(state.copyWith(clearLocale: true));
+        await _settingsStorage.saveLocale(null);
+        return;
+      }
+
+      emit(state.copyWith(locale: locale));
+      await _settingsStorage.saveLocale(locale);
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   Future<void> backupNow() async {

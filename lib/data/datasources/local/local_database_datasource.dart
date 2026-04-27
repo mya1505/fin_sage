@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fin_sage/core/constants/app_constants.dart';
+import 'package:fin_sage/data/datasources/local/db_migration_service.dart';
 import 'package:fin_sage/data/datasources/local/secure_key_service.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
 import 'package:fin_sage/data/models/category_model.dart';
@@ -9,9 +10,10 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class LocalDatabaseDataSource {
-  LocalDatabaseDataSource(this._secureKeyService);
+  LocalDatabaseDataSource(this._secureKeyService, this._migrationService);
 
   final SecureKeyService _secureKeyService;
+  final DbMigrationService _migrationService;
   Database? _db;
 
   Future<Database> _database() async {
@@ -26,52 +28,10 @@ class LocalDatabaseDataSource {
     _db = await openDatabase(
       dbPath,
       password: key,
-      version: 2,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE categories (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            color_hex TEXT NOT NULL,
-            icon TEXT NOT NULL DEFAULT 'wallet',
-            is_archived INTEGER NOT NULL DEFAULT 0
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE transactions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            amount REAL NOT NULL,
-            date TEXT NOT NULL,
-            category_id INTEGER NOT NULL,
-            type TEXT NOT NULL,
-            FOREIGN KEY(category_id) REFERENCES categories(id)
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE budgets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category_id INTEGER NOT NULL,
-            month TEXT NOT NULL,
-            limit_amount REAL NOT NULL,
-            used_amount REAL NOT NULL DEFAULT 0,
-            FOREIGN KEY(category_id) REFERENCES categories(id)
-          )
-        ''');
-
-        await db.insert('categories', {
-          'name': 'General',
-          'color_hex': '#0D3B66',
-          'icon': 'wallet',
-        });
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await db.execute('ALTER TABLE categories ADD COLUMN is_archived INTEGER DEFAULT 0');
-        }
-      },
+      version: DbMigrationService.schemaVersion,
+      onCreate: (db, version) async => _migrationService.createLatestSchema(db),
+      onUpgrade: (db, oldVersion, newVersion) async =>
+          _migrationService.upgrade(db, oldVersion, newVersion),
     );
 
     return _db!;
