@@ -1,4 +1,5 @@
 import 'package:crypto/crypto.dart';
+import 'package:fin_sage/core/utils/app_event_logger.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
@@ -16,17 +17,34 @@ class BackupRepositoryImpl implements BackupRepository {
 
   @override
   Future<void> backupNow() async {
+    AppEventLogger.info('backup.manual.started');
     final bytes = await _local.databaseBytes();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now().toUtc());
     final backupFilename = 'finsage-backup-$timestamp.db';
     await _remote.uploadBackup(bytes, backupFilename);
+    AppEventLogger.info(
+      'backup.manual.uploaded',
+      data: {
+        'filename': backupFilename,
+        'size_bytes': bytes.length,
+      },
+    );
     final checksum = _sha256Hex(bytes);
     try {
       await _remote.uploadBackupChecksum('$backupFilename.sha256', checksum);
+      AppEventLogger.info(
+        'backup.manual.checksum_uploaded',
+        data: {'filename': '$backupFilename.sha256'},
+      );
     } catch (_) {
+      AppEventLogger.warning(
+        'backup.manual.checksum_upload_failed',
+        data: {'filename': '$backupFilename.sha256'},
+      );
       // Keep backup successful even when sidecar checksum upload fails.
     }
     await _cleanupOldBackupsBestEffort();
+    AppEventLogger.info('backup.manual.completed');
   }
 
   @override
@@ -88,6 +106,10 @@ class BackupRepositoryImpl implements BackupRepository {
       final checksumFilename = '$backupName.sha256';
       return _remote.downloadBackupChecksumByName(checksumFilename);
     } catch (_) {
+      AppEventLogger.warning(
+        'backup.restore.checksum_lookup_skipped',
+        data: {'file_id': fileId},
+      );
       return null;
     }
   }
@@ -105,25 +127,48 @@ class BackupRepositoryImpl implements BackupRepository {
       });
 
       if (candidates.length <= _maxBackupFiles) {
+        AppEventLogger.info(
+          'backup.cleanup.skipped',
+          data: {'count': candidates.length},
+        );
         return;
       }
 
+      var deletedCount = 0;
       for (final file in candidates.skip(_maxBackupFiles)) {
         try {
           await _remote.deleteBackup(file.id!);
+          deletedCount += 1;
         } catch (_) {
+          AppEventLogger.warning(
+            'backup.cleanup.delete_failed',
+            data: {'file_id': file.id},
+          );
           // Best-effort cleanup should never fail user-triggered backup.
         }
       }
+      AppEventLogger.info(
+        'backup.cleanup.completed',
+        data: {
+          'deleted_count': deletedCount,
+          'retained_count': _maxBackupFiles,
+        },
+      );
     } catch (_) {
+      AppEventLogger.warning('backup.cleanup.failed_to_list');
       // Best-effort cleanup should never fail user-triggered backup.
     }
   }
 
   @override
   Future<void> restoreFromFile(String fileId) async {
+    AppEventLogger.info('backup.restore.started', data: {'file_id': fileId});
     final bytes = await _remote.downloadBackup(fileId);
     if (!BackupFileValidator.isLikelyValidDatabaseBackup(bytes)) {
+      AppEventLogger.error(
+        'backup.restore.invalid_file',
+        data: {'file_id': fileId, 'size_bytes': bytes.length},
+      );
       throw const AppException(
         'Backup file invalid or corrupted',
         code: 'backup_invalid_file',
@@ -133,12 +178,25 @@ class BackupRepositoryImpl implements BackupRepository {
     if (expectedChecksum != null && expectedChecksum.isNotEmpty) {
       final actualChecksum = _sha256Hex(bytes);
       if (actualChecksum.toLowerCase() != expectedChecksum.toLowerCase()) {
+        AppEventLogger.error(
+          'backup.restore.checksum_mismatch',
+          data: {
+            'file_id': fileId,
+            'expected_checksum': expectedChecksum,
+            'actual_checksum': actualChecksum,
+          },
+        );
         throw const AppException(
           'Backup checksum mismatch',
           code: 'backup_checksum_mismatch',
         );
       }
+      AppEventLogger.info('backup.restore.checksum_verified', data: {'file_id': fileId});
     }
     await _local.replaceDatabaseFile(bytes);
+    AppEventLogger.info(
+      'backup.restore.completed',
+      data: {'file_id': fileId, 'size_bytes': bytes.length},
+    );
   }
 }

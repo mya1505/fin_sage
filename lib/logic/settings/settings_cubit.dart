@@ -4,6 +4,7 @@ import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fin_sage/core/errors/error_mapper.dart';
+import 'package:fin_sage/core/utils/app_event_logger.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:flutter/material.dart';
@@ -164,8 +165,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> backupNow() async {
     if (state.backupInProgress) {
+      AppEventLogger.warning('settings.backup.ignored_in_progress');
       return;
     }
+    AppEventLogger.info('settings.backup.started');
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -184,15 +187,19 @@ class SettingsCubit extends Cubit<SettingsState> {
           lastCompletedOperation: SettingsOperation.backup,
         ),
       );
+      AppEventLogger.info('settings.backup.completed', data: {'last_backup_at': now});
     } catch (e) {
+      AppEventLogger.error('settings.backup.failed', error: e);
       emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
   Future<void> scheduleAutoBackupValidation() async {
     if (state.backupInProgress) {
+      AppEventLogger.warning('settings.auto_backup_validation.ignored_in_progress');
       return;
     }
+    AppEventLogger.info('settings.auto_backup_validation.started');
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -212,7 +219,9 @@ class SettingsCubit extends Cubit<SettingsState> {
           lastCompletedOperation: SettingsOperation.autoBackupValidation,
         ),
       );
+      AppEventLogger.info('settings.auto_backup_validation.scheduled');
     } catch (e) {
+      AppEventLogger.error('settings.auto_backup_validation.failed', error: e);
       emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
@@ -235,8 +244,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> loadRestorePreview() async {
     if (state.backupInProgress) {
+      AppEventLogger.warning('settings.restore_preview.ignored_in_progress');
       return;
     }
+    AppEventLogger.info('settings.restore_preview.started');
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -253,15 +264,25 @@ class SettingsCubit extends Cubit<SettingsState> {
           lastCompletedOperation: SettingsOperation.preview,
         ),
       );
+      AppEventLogger.info(
+        'settings.restore_preview.completed',
+        data: {'files_count': preview.length},
+      );
     } catch (e) {
+      AppEventLogger.error('settings.restore_preview.failed', error: e);
       emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
   Future<void> restoreByFileId(String fileId) async {
     if (state.backupInProgress) {
+      AppEventLogger.warning(
+        'settings.restore.ignored_in_progress',
+        data: {'file_id': fileId},
+      );
       return;
     }
+    AppEventLogger.info('settings.restore.started', data: {'file_id': fileId});
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -277,15 +298,23 @@ class SettingsCubit extends Cubit<SettingsState> {
           lastCompletedOperation: SettingsOperation.restore,
         ),
       );
+      AppEventLogger.info('settings.restore.completed', data: {'file_id': fileId});
     } catch (e) {
+      AppEventLogger.error(
+        'settings.restore.failed',
+        data: {'file_id': fileId},
+        error: e,
+      );
       emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
   Future<void> resetLocalData() async {
     if (state.backupInProgress) {
+      AppEventLogger.warning('settings.reset_local_data.ignored_in_progress');
       return;
     }
+    AppEventLogger.info('settings.reset_local_data.started');
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -302,7 +331,9 @@ class SettingsCubit extends Cubit<SettingsState> {
           lastCompletedOperation: SettingsOperation.reset,
         ),
       );
+      AppEventLogger.info('settings.reset_local_data.completed');
     } catch (e) {
+      AppEventLogger.error('settings.reset_local_data.failed', error: e);
       emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }

@@ -30,6 +30,7 @@ Lihat folder `lib/` untuk pembagian:
 - Backup cloud otomatis membersihkan backup lama (retensi 30 file terbaru) agar storage Drive tetap terkontrol.
 - Backup baru menyimpan sidecar checksum SHA-256, dan restore akan memverifikasi checksum saat tersedia.
 - Setelah restore backup berhasil, data transaksi/budget/dashboard otomatis di-refresh.
+- Event backup/restore utama dicatat sebagai structured log dan breadcrumb Sentry untuk observability produksi.
 - Preference tema dan bahasa disimpan lokal (`SharedPreferences`) dan dipulihkan saat startup.
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
 - Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
