@@ -12,6 +12,17 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
+abstract class AutoBackupValidationScheduler {
+  Future<void> scheduleValidationNow();
+}
+
+class WorkmanagerAutoBackupValidationScheduler implements AutoBackupValidationScheduler {
+  const WorkmanagerAutoBackupValidationScheduler();
+
+  @override
+  Future<void> scheduleValidationNow() => BackupScheduler.scheduleValidationNow();
+}
+
 class BackupScheduler {
   static const String taskName = 'finsage.auto_backup';
   static const String validationTaskName = 'finsage.auto_backup.validation';

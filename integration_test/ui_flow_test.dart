@@ -8,6 +8,7 @@ import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
+import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/features/settings/settings_page.dart';
 import 'package:fin_sage/features/transactions/transactions_page.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
@@ -35,6 +36,7 @@ class MockBudgetNotificationService extends Mock implements BudgetNotificationSe
 class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
 
 class MockAutoBackupTelemetryStorage extends Mock implements AutoBackupTelemetryStorage {}
+class MockAutoBackupValidationScheduler extends Mock implements AutoBackupValidationScheduler {}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -107,11 +109,13 @@ void main() {
     final localDb = MockLocalDatabaseDataSource();
     final notificationService = MockBudgetNotificationService();
     final telemetryStorage = MockAutoBackupTelemetryStorage();
+    final validationScheduler = MockAutoBackupValidationScheduler();
 
     final txCubit = TransactionCubit(txRepo);
     final budgetCubit = BudgetCubit(budgetRepo, notificationService, settingsStorage);
     final dashboardCubit = DashboardCubit(txRepo);
-    final settingsCubit = SettingsCubit(backupRepo, settingsStorage, localDb, telemetryStorage);
+    final settingsCubit =
+        SettingsCubit(backupRepo, settingsStorage, localDb, telemetryStorage, validationScheduler);
 
     addTearDown(txCubit.close);
     addTearDown(budgetCubit.close);
@@ -131,6 +135,7 @@ void main() {
     when(() => settingsStorage.loadLocale()).thenAnswer((_) async => null);
     when(() => settingsStorage.loadLastBackupAt()).thenAnswer((_) async => null);
     when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
 
     when(() => backupRepo.restorePreview()).thenAnswer(
       (_) async => const [

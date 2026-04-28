@@ -87,13 +87,20 @@ class SettingsState extends Equatable {
 }
 
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit(this._repo, this._settingsStorage, this._localDatabaseDataSource, this._telemetryStorage)
+  SettingsCubit(
+    this._repo,
+    this._settingsStorage,
+    this._localDatabaseDataSource,
+    this._telemetryStorage,
+    this._validationScheduler,
+  )
       : super(const SettingsState());
 
   final BackupRepository _repo;
   final SettingsStorage _settingsStorage;
   final LocalDatabaseDataSource _localDatabaseDataSource;
   final AutoBackupTelemetryStorage _telemetryStorage;
+  final AutoBackupValidationScheduler _validationScheduler;
 
   Future<void> loadSettings() async {
     try {
@@ -193,7 +200,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       ),
     );
     try {
-      await BackupScheduler.scheduleValidationNow();
+      await _validationScheduler.scheduleValidationNow();
       final telemetry = await _telemetryStorage.loadTelemetry();
       emit(
         state.copyWith(

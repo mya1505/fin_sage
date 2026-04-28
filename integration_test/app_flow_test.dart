@@ -6,6 +6,7 @@ import 'package:fin_sage/data/models/category_model.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
+import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class MockSettingsStorage extends Mock implements SettingsStorage {}
 
 class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
 class MockAutoBackupTelemetryStorage extends Mock implements AutoBackupTelemetryStorage {}
+class MockAutoBackupValidationScheduler extends Mock implements AutoBackupValidationScheduler {}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -101,7 +103,9 @@ void main() {
     final storage = MockSettingsStorage();
     final localDatabase = MockLocalDatabaseDataSource();
     final telemetry = MockAutoBackupTelemetryStorage();
-    final cubit = SettingsCubit(backupRepository, storage, localDatabase, telemetry);
+    final validationScheduler = MockAutoBackupValidationScheduler();
+    final cubit =
+        SettingsCubit(backupRepository, storage, localDatabase, telemetry, validationScheduler);
     addTearDown(cubit.close);
 
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
@@ -110,6 +114,7 @@ void main() {
     when(() => storage.loadLastBackupAt()).thenAnswer((_) async => null);
     when(() => storage.saveLastBackupAt(any())).thenAnswer((_) async {});
     when(() => telemetry.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
 
     const preview = [
       BackupFileModel(

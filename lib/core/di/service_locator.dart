@@ -15,6 +15,7 @@ import 'package:fin_sage/data/repositories/impl/budget_repository_impl.dart';
 import 'package:fin_sage/data/repositories/impl/transaction_repository_impl.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
+import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
 import 'package:fin_sage/logic/budgets/budget_cubit.dart';
 import 'package:fin_sage/logic/dashboard/dashboard_cubit.dart';
@@ -44,6 +45,9 @@ class ServiceLocator {
     sl.registerLazySingleton(() => DriftQueryService());
     sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
     sl.registerLazySingleton(() => BudgetNotificationService(sl()));
+    sl.registerLazySingleton<AutoBackupValidationScheduler>(
+      () => const WorkmanagerAutoBackupValidationScheduler(),
+    );
 
     sl.registerLazySingleton(
       () => GoogleSignIn(
@@ -67,6 +71,6 @@ class ServiceLocator {
     sl.registerFactory(() => TransactionCubit(sl()));
     sl.registerFactory(() => BudgetCubit(sl(), sl(), sl()));
     sl.registerFactory(() => ReportCubit());
-    sl.registerFactory(() => SettingsCubit(sl(), sl(), sl(), sl()));
+    sl.registerFactory(() => SettingsCubit(sl(), sl(), sl(), sl(), sl()));
   }
 }

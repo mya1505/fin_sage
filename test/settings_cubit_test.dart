@@ -4,6 +4,7 @@ import 'package:fin_sage/data/datasources/local/auto_backup_telemetry_storage.da
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
+import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,12 +14,14 @@ class MockBackupRepository extends Mock implements BackupRepository {}
 class MockSettingsStorage extends Mock implements SettingsStorage {}
 class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
 class MockAutoBackupTelemetryStorage extends Mock implements AutoBackupTelemetryStorage {}
+class MockAutoBackupValidationScheduler extends Mock implements AutoBackupValidationScheduler {}
 
 void main() {
   late MockBackupRepository repo;
   late MockSettingsStorage storage;
   late MockLocalDatabaseDataSource localDb;
   late MockAutoBackupTelemetryStorage telemetryStorage;
+  late MockAutoBackupValidationScheduler validationScheduler;
   late SettingsCubit cubit;
 
   setUpAll(() {
@@ -30,13 +33,15 @@ void main() {
     storage = MockSettingsStorage();
     localDb = MockLocalDatabaseDataSource();
     telemetryStorage = MockAutoBackupTelemetryStorage();
-    cubit = SettingsCubit(repo, storage, localDb, telemetryStorage);
+    validationScheduler = MockAutoBackupValidationScheduler();
+    cubit = SettingsCubit(repo, storage, localDb, telemetryStorage, validationScheduler);
 
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
     when(() => storage.loadLocale()).thenAnswer((_) async => null);
     when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => true);
     when(() => storage.loadLastBackupAt()).thenAnswer((_) async => null);
     when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -123,5 +128,49 @@ void main() {
     expect(cubit.state.backupInProgress, false);
     expect(cubit.state.lastCompletedOperation, SettingsOperation.reset);
     verify(() => localDb.resetLocalData()).called(1);
+  });
+
+  test('loadRestorePreview should emit error when preview fails', () async {
+    when(() => repo.restorePreview()).thenThrow(Exception('preview failed'));
+
+    await cubit.loadRestorePreview();
+
+    expect(cubit.state.backupInProgress, false);
+    expect(cubit.state.error, contains('preview failed'));
+  });
+
+  test('restoreByFileId should emit error when restore fails', () async {
+    when(() => repo.restoreFromFile('file-1')).thenThrow(Exception('restore failed'));
+
+    await cubit.restoreByFileId('file-1');
+
+    expect(cubit.state.backupInProgress, false);
+    expect(cubit.state.error, contains('restore failed'));
+  });
+
+  test('scheduleAutoBackupValidation should schedule and refresh telemetry', () async {
+    when(() => telemetryStorage.loadTelemetry()).thenAnswer(
+      (_) async => AutoBackupTelemetry(
+        lastAttemptAt: DateTime(2026, 4, 28, 4, 10),
+        lastSuccessAt: DateTime(2026, 4, 28, 4, 11),
+        lastError: null,
+      ),
+    );
+
+    await cubit.scheduleAutoBackupValidation();
+
+    verify(() => validationScheduler.scheduleValidationNow()).called(1);
+    expect(cubit.state.lastCompletedOperation, SettingsOperation.autoBackupValidation);
+    expect(cubit.state.autoBackupLastAttemptAt, DateTime(2026, 4, 28, 4, 10));
+    expect(cubit.state.autoBackupLastSuccessAt, DateTime(2026, 4, 28, 4, 11));
+  });
+
+  test('scheduleAutoBackupValidation should emit error when scheduler fails', () async {
+    when(() => validationScheduler.scheduleValidationNow()).thenThrow(Exception('scheduler failed'));
+
+    await cubit.scheduleAutoBackupValidation();
+
+    expect(cubit.state.backupInProgress, false);
+    expect(cubit.state.error, contains('scheduler failed'));
   });
 }
