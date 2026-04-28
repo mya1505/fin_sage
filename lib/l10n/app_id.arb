@@ -82,6 +82,8 @@
   "invalidColorHex": "Hex warna tidak valid, gunakan format #RRGGBB",
   "confirmDeleteTitle": "Hapus Transaksi",
   "confirmDeleteBody": "Transaksi ini akan dihapus permanen. Lanjutkan?",
+  "confirmDeleteBudgetTitle": "Hapus Anggaran",
+  "confirmDeleteBudgetBody": "Anggaran ini akan dihapus permanen. Lanjutkan?",
   "cancelLabel": "Batal",
   "deleteActionLabel": "Hapus",
   "updateActionLabel": "Perbarui",

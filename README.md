@@ -35,6 +35,7 @@ Lihat folder `lib/` untuk pembagian:
 - Kategori kustom dapat ditambah langsung dari halaman transaksi.
 - Kategori non-default dapat diarsipkan jika belum dipakai oleh transaksi.
 - Anggaran mendukung edit/update langsung dari daftar budget.
+- Anggaran sekarang mendukung hapus budget dengan konfirmasi.
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.
 - Laporan mendukung filter bulanan dengan ringkasan income/expense/balance sebelum export.
 - Settings menyediakan aksi sign out dengan konfirmasi.

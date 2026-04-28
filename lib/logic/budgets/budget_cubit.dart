@@ -53,6 +53,17 @@ class BudgetCubit extends Cubit<BudgetState> {
     }
   }
 
+  Future<void> removeBudget(int budgetId) async {
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.deleteBudget(budgetId);
+      _notifiedBudgetIds.remove(budgetId);
+      await loadBudgets();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
   Future<void> _notifyExceededBudgets(List<BudgetModel> items) async {
     final notificationsEnabled = await _settingsStorage.loadNotificationsEnabled();
     if (!notificationsEnabled) {

@@ -103,6 +103,8 @@ class AppLocalizations {
       'invalidColorHex': 'Invalid hex color, use format #RRGGBB',
       'confirmDeleteTitle': 'Delete Transaction',
       'confirmDeleteBody': 'This transaction will be permanently removed. Continue?',
+      'confirmDeleteBudgetTitle': 'Delete Budget',
+      'confirmDeleteBudgetBody': 'This budget will be permanently removed. Continue?',
       'cancelLabel': 'Cancel',
       'deleteActionLabel': 'Delete',
       'updateActionLabel': 'Update',
@@ -192,6 +194,8 @@ class AppLocalizations {
       'invalidColorHex': 'Hex warna tidak valid, gunakan format #RRGGBB',
       'confirmDeleteTitle': 'Hapus Transaksi',
       'confirmDeleteBody': 'Transaksi ini akan dihapus permanen. Lanjutkan?',
+      'confirmDeleteBudgetTitle': 'Hapus Anggaran',
+      'confirmDeleteBudgetBody': 'Anggaran ini akan dihapus permanen. Lanjutkan?',
       'cancelLabel': 'Batal',
       'deleteActionLabel': 'Hapus',
       'updateActionLabel': 'Perbarui',
@@ -286,6 +290,8 @@ class AppLocalizations {
   String get updateActionLabel => _t('updateActionLabel');
   String get confirmDeleteTitle => _t('confirmDeleteTitle');
   String get confirmDeleteBody => _t('confirmDeleteBody');
+  String get confirmDeleteBudgetTitle => _t('confirmDeleteBudgetTitle');
+  String get confirmDeleteBudgetBody => _t('confirmDeleteBudgetBody');
   String get restoreActionLabel => _t('restoreActionLabel');
 }
 

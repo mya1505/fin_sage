@@ -109,6 +109,12 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                   icon: const Icon(Icons.edit_outlined),
                                   onPressed: () => _showBudgetForm(context, existing: budget),
                                 ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline),
+                                  onPressed: budget.id == null
+                                      ? null
+                                      : () => _confirmDeleteBudget(context, budget.id!),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 4),
@@ -141,6 +147,33 @@ class _BudgetsPageState extends State<BudgetsPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmDeleteBudget(BuildContext context, int budgetId) async {
+    final l10n = AppLocalizations.of(context)!;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.confirmDeleteBudgetTitle),
+          content: Text(l10n.confirmDeleteBudgetBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.deleteActionLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (approved == true && context.mounted) {
+      await context.read<BudgetCubit>().removeBudget(budgetId);
+    }
   }
 
   Future<void> _showBudgetForm(BuildContext context, {BudgetModel? existing}) async {

@@ -82,6 +82,8 @@
   "invalidColorHex": "Invalid hex color, use format #RRGGBB",
   "confirmDeleteTitle": "Delete Transaction",
   "confirmDeleteBody": "This transaction will be permanently removed. Continue?",
+  "confirmDeleteBudgetTitle": "Delete Budget",
+  "confirmDeleteBudgetBody": "This budget will be permanently removed. Continue?",
   "cancelLabel": "Cancel",
   "deleteActionLabel": "Delete",
   "updateActionLabel": "Update",

@@ -138,6 +138,11 @@ class LocalDatabaseDataSource {
     await db.insert('budgets', budget.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<void> deleteBudget(int budgetId) async {
+    final db = await _database();
+    await db.delete('budgets', where: 'id = ?', whereArgs: [budgetId]);
+  }
+
   Future<void> replaceDatabaseFile(List<int> bytes) async {
     final path = await databasePath();
     final file = File(path);

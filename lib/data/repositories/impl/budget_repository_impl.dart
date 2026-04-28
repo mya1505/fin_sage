@@ -12,4 +12,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
 
   @override
   Future<void> saveBudget(BudgetModel budget) => _local.saveBudget(budget);
+
+  @override
+  Future<void> deleteBudget(int budgetId) => _local.deleteBudget(budgetId);
 }

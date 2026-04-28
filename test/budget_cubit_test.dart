@@ -108,4 +108,20 @@ void main() {
       verifyNever(() => notificationService.notifyBudgetExceeded(budgetId: any(named: 'budgetId')));
     },
   );
+
+  blocTest<BudgetCubit, BudgetState>(
+    'removeBudget deletes budget and reloads list',
+    build: () {
+      when(() => repository.deleteBudget(1)).thenAnswer((_) async {});
+      when(() => repository.fetchBudgets()).thenAnswer((_) async => budgets.skip(1).toList());
+      return BudgetCubit(repository, notificationService, settingsStorage);
+    },
+    act: (cubit) => cubit.removeBudget(1),
+    expect: () => [
+      const BudgetState(loading: false, items: [], error: null),
+      const BudgetState(loading: true),
+      isA<BudgetState>().having((s) => s.items.length, 'items length', 1),
+    ],
+    verify: (_) => verify(() => repository.deleteBudget(1)).called(1),
+  );
 }
