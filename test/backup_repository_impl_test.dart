@@ -42,12 +42,22 @@ void main() {
     when(() => remote.uploadBackup(bytes, any())).thenAnswer((_) async {});
     when(() => remote.uploadBackupChecksum(any(), any())).thenAnswer((_) async {});
 
-    final files = List<drive.File>.generate(32, (index) {
-      return drive.File()
-        ..id = 'file-$index'
-        ..name = 'finsage-backup-20260401_${(100000 + index).toString()}.db'
-        ..createdTime = DateTime(2026, 4, 1).add(Duration(minutes: index));
-    });
+    final files = <drive.File>[];
+    for (var index = 0; index < 32; index++) {
+      final dbName = 'finsage-backup-20260401_${(100000 + index).toString()}.db';
+      files.add(
+        drive.File()
+          ..id = 'file-$index'
+          ..name = dbName
+          ..createdTime = DateTime(2026, 4, 1).add(Duration(minutes: index)),
+      );
+      files.add(
+        drive.File()
+          ..id = 'checksum-$index'
+          ..name = '$dbName.sha256'
+          ..createdTime = DateTime(2026, 4, 1).add(Duration(minutes: index)),
+      );
+    }
     when(() => remote.listBackups()).thenAnswer((_) async => files);
     when(() => remote.deleteBackup(any())).thenAnswer((_) async {});
 
@@ -55,6 +65,8 @@ void main() {
 
     verify(() => remote.deleteBackup('file-1')).called(1);
     verify(() => remote.deleteBackup('file-0')).called(1);
+    verify(() => remote.deleteBackup('checksum-1')).called(1);
+    verify(() => remote.deleteBackup('checksum-0')).called(1);
   });
 
   test('backupNow should still succeed when cleanup listing fails', () async {
@@ -139,5 +151,16 @@ void main() {
       ),
     );
     verifyNever(() => local.replaceDatabaseFile(any()));
+  });
+
+  test('restoreFromFile should continue when checksum metadata cannot be loaded', () async {
+    final validBytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => validBytes);
+    when(() => remote.getBackupMetadata('file-1')).thenThrow(Exception('metadata unavailable'));
+    when(() => local.replaceDatabaseFile(validBytes)).thenAnswer((_) async {});
+
+    await repository.restoreFromFile('file-1');
+
+    verify(() => local.replaceDatabaseFile(validBytes)).called(1);
   });
 }

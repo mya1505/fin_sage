@@ -117,6 +117,11 @@ class BackupRepositoryImpl implements BackupRepository {
   Future<void> _cleanupOldBackupsBestEffort() async {
     try {
       final files = await _remote.listBackups();
+      final fileIdByName = <String, String>{
+        for (final file in files)
+          if (file.id != null && file.id!.isNotEmpty && file.name != null && file.name!.isNotEmpty)
+            file.name!: file.id!,
+      };
       final candidates = files
           .where((file) => file.id != null && file.id!.isNotEmpty && _isDatabaseBackupName(file.name))
           .toList();
@@ -135,6 +140,7 @@ class BackupRepositoryImpl implements BackupRepository {
       }
 
       var deletedCount = 0;
+      var deletedChecksumCount = 0;
       for (final file in candidates.skip(_maxBackupFiles)) {
         try {
           await _remote.deleteBackup(file.id!);
@@ -146,11 +152,27 @@ class BackupRepositoryImpl implements BackupRepository {
           );
           // Best-effort cleanup should never fail user-triggered backup.
         }
+
+        final checksumName = '${file.name}.sha256';
+        final checksumId = fileIdByName[checksumName];
+        if (checksumId == null || checksumId.isEmpty) {
+          continue;
+        }
+        try {
+          await _remote.deleteBackup(checksumId);
+          deletedChecksumCount += 1;
+        } catch (_) {
+          AppEventLogger.warning(
+            'backup.cleanup.delete_checksum_failed',
+            data: {'file_id': checksumId, 'checksum_name': checksumName},
+          );
+        }
       }
       AppEventLogger.info(
         'backup.cleanup.completed',
         data: {
           'deleted_count': deletedCount,
+          'deleted_checksum_count': deletedChecksumCount,
           'retained_count': _maxBackupFiles,
         },
       );
