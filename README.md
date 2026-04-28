@@ -36,6 +36,7 @@ Lihat folder `lib/` untuk pembagian:
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.
 - Laporan mendukung filter bulanan dengan ringkasan income/expense/balance sebelum export.
 - Settings menyediakan aksi sign out dengan konfirmasi.
+- Settings mendukung toggle notifikasi budget dan reset data lokal aman.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup

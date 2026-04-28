@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
@@ -24,10 +25,11 @@ class BudgetState extends Equatable {
 }
 
 class BudgetCubit extends Cubit<BudgetState> {
-  BudgetCubit(this._repo, this._notificationService) : super(const BudgetState());
+  BudgetCubit(this._repo, this._notificationService, this._settingsStorage) : super(const BudgetState());
 
   final BudgetRepository _repo;
   final BudgetNotificationService _notificationService;
+  final SettingsStorage _settingsStorage;
   final Set<int> _notifiedBudgetIds = <int>{};
 
   Future<void> loadBudgets() async {
@@ -52,6 +54,11 @@ class BudgetCubit extends Cubit<BudgetState> {
   }
 
   Future<void> _notifyExceededBudgets(List<BudgetModel> items) async {
+    final notificationsEnabled = await _settingsStorage.loadNotificationsEnabled();
+    if (!notificationsEnabled) {
+      return;
+    }
+
     for (final budget in items) {
       final id = budget.id;
       if (id == null || budget.usageRatio < 1 || _notifiedBudgetIds.contains(id)) {

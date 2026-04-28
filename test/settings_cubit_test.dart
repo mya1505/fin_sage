@@ -1,3 +1,4 @@
+import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
@@ -7,19 +8,23 @@ import 'package:mocktail/mocktail.dart';
 
 class MockBackupRepository extends Mock implements BackupRepository {}
 class MockSettingsStorage extends Mock implements SettingsStorage {}
+class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
 
 void main() {
   late MockBackupRepository repo;
   late MockSettingsStorage storage;
+  late MockLocalDatabaseDataSource localDb;
   late SettingsCubit cubit;
 
   setUp(() {
     repo = MockBackupRepository();
     storage = MockSettingsStorage();
-    cubit = SettingsCubit(repo, storage);
+    localDb = MockLocalDatabaseDataSource();
+    cubit = SettingsCubit(repo, storage, localDb);
 
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
     when(() => storage.loadLocale()).thenAnswer((_) async => null);
+    when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => true);
   });
 
   tearDown(() async {
@@ -35,14 +40,16 @@ void main() {
     verify(() => repo.backupNow()).called(1);
   });
 
-  test('loadSettings should apply saved theme and locale', () async {
+  test('loadSettings should apply saved theme, locale, and notification setting', () async {
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.dark);
     when(() => storage.loadLocale()).thenAnswer((_) async => const Locale('id'));
+    when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => false);
 
     await cubit.loadSettings();
 
     expect(cubit.state.themeMode, ThemeMode.dark);
     expect(cubit.state.locale, const Locale('id'));
+    expect(cubit.state.notificationsEnabled, false);
   });
 
   test('setThemeMode should persist mode', () async {
@@ -65,5 +72,24 @@ void main() {
     await cubit.setLocale(null);
     expect(cubit.state.locale, isNull);
     verify(() => storage.saveLocale(null)).called(1);
+  });
+
+  test('setNotificationsEnabled should persist notifications preference', () async {
+    when(() => storage.saveNotificationsEnabled(false)).thenAnswer((_) async {});
+
+    await cubit.setNotificationsEnabled(false);
+
+    expect(cubit.state.notificationsEnabled, false);
+    verify(() => storage.saveNotificationsEnabled(false)).called(1);
+  });
+
+  test('resetLocalData should clear local db and emit reset operation', () async {
+    when(() => localDb.resetLocalData()).thenAnswer((_) async {});
+
+    await cubit.resetLocalData();
+
+    expect(cubit.state.backupInProgress, false);
+    expect(cubit.state.lastCompletedOperation, SettingsOperation.reset);
+    verify(() => localDb.resetLocalData()).called(1);
   });
 }

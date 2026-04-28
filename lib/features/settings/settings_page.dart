@@ -3,7 +3,10 @@ import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
+import 'package:fin_sage/logic/budgets/budget_cubit.dart';
+import 'package:fin_sage/logic/dashboard/dashboard_cubit.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
+import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -45,6 +48,9 @@ class SettingsPage extends StatelessWidget {
                   break;
                 case SettingsOperation.restore:
                   message = l10n.restoreCompleted;
+                  break;
+                case SettingsOperation.reset:
+                  message = l10n.localDataResetCompleted;
                   break;
                 case SettingsOperation.none:
                   break;
@@ -88,6 +94,14 @@ class SettingsPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.budgetNotificationsLabel),
+                    trailing: Switch(
+                      value: state.notificationsEnabled,
+                      onChanged: (value) => cubit.setNotificationsEnabled(value),
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   FilledButton.icon(
                     onPressed: state.backupInProgress ? null : cubit.backupNow,
@@ -99,6 +113,12 @@ class SettingsPage extends StatelessWidget {
                     onPressed: state.backupInProgress ? null : cubit.loadRestorePreview,
                     icon: const Icon(Icons.restore),
                     label: Text(l10n.restorePreview),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: state.backupInProgress ? null : () => _confirmResetLocalData(context),
+                    icon: const Icon(Icons.delete_sweep_outlined),
+                    label: Text(l10n.resetLocalDataLabel),
                   ),
                   const SizedBox(height: 16),
                   Lottie.asset(LottiePlaceholders.backupAnimation, height: 140),
@@ -132,6 +152,39 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmResetLocalData(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.resetLocalDataLabel),
+          content: Text(l10n.resetLocalDataConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.resetActionLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (approved == true && context.mounted) {
+      await context.read<SettingsCubit>().resetLocalData();
+      if (!context.mounted) {
+        return;
+      }
+      await context.read<TransactionCubit>().loadTransactions();
+      await context.read<BudgetCubit>().loadBudgets();
+      await context.read<DashboardCubit>().loadOverview();
+    }
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {

@@ -64,6 +64,7 @@ class AppLocalizations {
       'transactionCount': '{count} transactions',
       'netBalance': 'Net Balance',
       'darkMode': 'Dark Mode',
+      'budgetNotificationsLabel': 'Budget Notifications',
       'languageLabel': 'Language',
       'systemDefault': 'System Default',
       'englishLanguage': 'English',
@@ -78,6 +79,11 @@ class AppLocalizations {
       'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
       'signOutLabel': 'Sign Out',
       'signOutConfirmBody': 'You will be returned to login screen. Continue?',
+      'resetLocalDataLabel': 'Reset Local Data',
+      'resetLocalDataConfirmBody':
+          'This will remove local transactions, budgets, and custom categories. Continue?',
+      'resetActionLabel': 'Reset',
+      'localDataResetCompleted': 'Local data has been reset',
       'manageCategories': 'Manage categories',
       'addCategory': 'Add Category',
       'categoryNameLabel': 'Category Name',
@@ -144,6 +150,7 @@ class AppLocalizations {
       'transactionCount': '{count} transaksi',
       'netBalance': 'Saldo Bersih',
       'darkMode': 'Mode Gelap',
+      'budgetNotificationsLabel': 'Notifikasi Anggaran',
       'languageLabel': 'Bahasa',
       'systemDefault': 'Ikuti Sistem',
       'englishLanguage': 'Inggris',
@@ -158,6 +165,11 @@ class AppLocalizations {
       'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
       'signOutLabel': 'Keluar',
       'signOutConfirmBody': 'Kamu akan kembali ke layar login. Lanjutkan?',
+      'resetLocalDataLabel': 'Reset Data Lokal',
+      'resetLocalDataConfirmBody':
+          'Ini akan menghapus transaksi, anggaran, dan kategori kustom lokal. Lanjutkan?',
+      'resetActionLabel': 'Reset',
+      'localDataResetCompleted': 'Data lokal berhasil di-reset',
       'manageCategories': 'Kelola kategori',
       'addCategory': 'Tambah Kategori',
       'categoryNameLabel': 'Nama Kategori',
@@ -227,6 +239,7 @@ class AppLocalizations {
   String transactionCount(int count) => _t('transactionCount').replaceAll('{count}', count.toString());
   String get netBalance => _t('netBalance');
   String get darkMode => _t('darkMode');
+  String get budgetNotificationsLabel => _t('budgetNotificationsLabel');
   String get languageLabel => _t('languageLabel');
   String get systemDefault => _t('systemDefault');
   String get englishLanguage => _t('englishLanguage');
@@ -241,6 +254,10 @@ class AppLocalizations {
   String get restoreConfirmBody => _t('restoreConfirmBody');
   String get signOutLabel => _t('signOutLabel');
   String get signOutConfirmBody => _t('signOutConfirmBody');
+  String get resetLocalDataLabel => _t('resetLocalDataLabel');
+  String get resetLocalDataConfirmBody => _t('resetLocalDataConfirmBody');
+  String get resetActionLabel => _t('resetActionLabel');
+  String get localDataResetCompleted => _t('localDataResetCompleted');
   String get manageCategories => _t('manageCategories');
   String get addCategory => _t('addCategory');
   String get categoryNameLabel => _t('categoryNameLabel');

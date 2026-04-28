@@ -133,4 +133,19 @@ class LocalDatabaseDataSource {
     await file.writeAsBytes(bytes, flush: true);
     _db = null;
   }
+
+  Future<void> resetLocalData() async {
+    final db = await _database();
+    await db.transaction((txn) async {
+      await txn.delete('transactions');
+      await txn.delete('budgets');
+      await txn.delete('categories');
+      await txn.insert('categories', {
+        'name': 'General',
+        'color_hex': '#0D3B66',
+        'icon': 'wallet',
+        'is_archived': 0,
+      });
+    });
+  }
 }

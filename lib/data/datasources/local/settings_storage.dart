@@ -6,6 +6,8 @@ abstract class SettingsStorage {
   Future<void> saveThemeMode(ThemeMode mode);
   Future<Locale?> loadLocale();
   Future<void> saveLocale(Locale? locale);
+  Future<bool> loadNotificationsEnabled();
+  Future<void> saveNotificationsEnabled(bool enabled);
 }
 
 class SharedPrefsSettingsStorage implements SettingsStorage {
@@ -13,6 +15,7 @@ class SharedPrefsSettingsStorage implements SettingsStorage {
 
   static const String _themeModeKey = 'settings.theme_mode';
   static const String _localeKey = 'settings.locale';
+  static const String _notificationsEnabledKey = 'settings.notifications_enabled';
 
   final SharedPreferences _prefs;
 
@@ -50,5 +53,15 @@ class SharedPrefsSettingsStorage implements SettingsStorage {
       return;
     }
     await _prefs.setString(_localeKey, locale.languageCode);
+  }
+
+  @override
+  Future<bool> loadNotificationsEnabled() async {
+    return _prefs.getBool(_notificationsEnabledKey) ?? true;
+  }
+
+  @override
+  Future<void> saveNotificationsEnabled(bool enabled) async {
+    await _prefs.setBool(_notificationsEnabledKey, enabled);
   }
 }

@@ -58,8 +58,8 @@ class ServiceLocator {
     sl.registerFactory(() => AuthCubit(sl()));
     sl.registerFactory(() => DashboardCubit(sl()));
     sl.registerFactory(() => TransactionCubit(sl()));
-    sl.registerFactory(() => BudgetCubit(sl(), sl()));
+    sl.registerFactory(() => BudgetCubit(sl(), sl(), sl()));
     sl.registerFactory(() => ReportCubit());
-    sl.registerFactory(() => SettingsCubit(sl(), sl()));
+    sl.registerFactory(() => SettingsCubit(sl(), sl(), sl()));
   }
 }
