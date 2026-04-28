@@ -34,6 +34,8 @@ Lihat folder `lib/` untuk pembagian:
 - Kategori kustom dapat ditambah langsung dari halaman transaksi.
 - Kategori non-default dapat diarsipkan jika belum dipakai oleh transaksi.
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.
+- Laporan mendukung filter bulanan dengan ringkasan income/expense/balance sebelum export.
+- Settings menyediakan aksi sign out dengan konfirmasi.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup

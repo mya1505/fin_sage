@@ -59,6 +59,10 @@ class AppLocalizations {
       'exportCsv': 'Export CSV',
       'noDataToExport': 'No data to export',
       'csvSaved': 'CSV saved: {path}',
+      'selectedMonthLabel': 'Month: {month}',
+      'monthlyReportTitle': 'FinSage Report - {month}',
+      'transactionCount': '{count} transactions',
+      'netBalance': 'Net Balance',
       'darkMode': 'Dark Mode',
       'languageLabel': 'Language',
       'systemDefault': 'System Default',
@@ -72,6 +76,8 @@ class AppLocalizations {
       'restoreCompleted': 'Restore completed successfully',
       'restoreConfirmTitle': 'Confirm Restore',
       'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
+      'signOutLabel': 'Sign Out',
+      'signOutConfirmBody': 'You will be returned to login screen. Continue?',
       'manageCategories': 'Manage categories',
       'addCategory': 'Add Category',
       'categoryNameLabel': 'Category Name',
@@ -133,6 +139,10 @@ class AppLocalizations {
       'exportCsv': 'Ekspor CSV',
       'noDataToExport': 'Tidak ada data untuk diekspor',
       'csvSaved': 'CSV tersimpan: {path}',
+      'selectedMonthLabel': 'Bulan: {month}',
+      'monthlyReportTitle': 'Laporan FinSage - {month}',
+      'transactionCount': '{count} transaksi',
+      'netBalance': 'Saldo Bersih',
       'darkMode': 'Mode Gelap',
       'languageLabel': 'Bahasa',
       'systemDefault': 'Ikuti Sistem',
@@ -146,6 +156,8 @@ class AppLocalizations {
       'restoreCompleted': 'Restore berhasil',
       'restoreConfirmTitle': 'Konfirmasi Restore',
       'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
+      'signOutLabel': 'Keluar',
+      'signOutConfirmBody': 'Kamu akan kembali ke layar login. Lanjutkan?',
       'manageCategories': 'Kelola kategori',
       'addCategory': 'Tambah Kategori',
       'categoryNameLabel': 'Nama Kategori',
@@ -210,6 +222,10 @@ class AppLocalizations {
   String get exportCsv => _t('exportCsv');
   String get noDataToExport => _t('noDataToExport');
   String csvSaved(String path) => _t('csvSaved').replaceAll('{path}', path);
+  String selectedMonthLabel(String month) => _t('selectedMonthLabel').replaceAll('{month}', month);
+  String monthlyReportTitle(String month) => _t('monthlyReportTitle').replaceAll('{month}', month);
+  String transactionCount(int count) => _t('transactionCount').replaceAll('{count}', count.toString());
+  String get netBalance => _t('netBalance');
   String get darkMode => _t('darkMode');
   String get languageLabel => _t('languageLabel');
   String get systemDefault => _t('systemDefault');
@@ -223,6 +239,8 @@ class AppLocalizations {
   String get restoreCompleted => _t('restoreCompleted');
   String get restoreConfirmTitle => _t('restoreConfirmTitle');
   String get restoreConfirmBody => _t('restoreConfirmBody');
+  String get signOutLabel => _t('signOutLabel');
+  String get signOutConfirmBody => _t('signOutConfirmBody');
   String get manageCategories => _t('manageCategories');
   String get addCategory => _t('addCategory');
   String get categoryNameLabel => _t('categoryNameLabel');

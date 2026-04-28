@@ -1,6 +1,8 @@
+import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
+import 'package:fin_sage/logic/auth/auth_cubit.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,6 +102,12 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Lottie.asset(LottiePlaceholders.backupAnimation, height: 140),
+                  const SizedBox(height: 16),
+                  FilledButton.tonalIcon(
+                    onPressed: () => _confirmSignOut(context),
+                    icon: const Icon(Icons.logout),
+                    label: Text(l10n.signOutLabel),
+                  ),
                   const SizedBox(height: 12),
                   if (state.restorePreview.isEmpty)
                     Text(l10n.noBackupFiles)
@@ -124,6 +132,36 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.signOutLabel),
+          content: Text(l10n.signOutConfirmBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.signOutLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (approved == true && context.mounted) {
+      await context.read<AuthCubit>().signOut();
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.root, (_) => false);
+      }
+    }
   }
 
   Future<void> _confirmRestore(BuildContext context, String fileId) async {

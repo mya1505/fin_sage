@@ -27,7 +27,7 @@ class ReportGenerator {
     return file;
   }
 
-  Future<Uint8List> generatePdf(List<TransactionModel> items) async {
+  Future<Uint8List> generatePdf(List<TransactionModel> items, {String? title}) async {
     final pdf = pw.Document();
     pdf.addPage(
       pw.Page(
@@ -36,7 +36,7 @@ class ReportGenerator {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('FinSage Financial Report', style: pw.TextStyle(fontSize: 20)),
+              pw.Text(title ?? 'FinSage Financial Report', style: pw.TextStyle(fontSize: 20)),
               pw.SizedBox(height: 16),
               ...items.map(
                 (e) => pw.Padding(
