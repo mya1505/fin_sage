@@ -1,5 +1,6 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/core/errors/error_localizer.dart';
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
 import 'package:fin_sage/features/reports/report_generator.dart';
@@ -143,7 +144,10 @@ class _ReportsPageState extends State<ReportsPage> {
                               : () {
                                   context.read<ReportCubit>().run(() async {
                                     if (filteredTxs.isEmpty) {
-                                      throw StateError(l10n.noDataToExport);
+                                      throw const AppException(
+                                        'No data to export',
+                                        code: 'no_data_to_export',
+                                      );
                                     }
                                     final title = l10n.monthlyReportTitle(
                                       DateFormat.yMMMM(localeTag).format(_selectedMonth),
@@ -166,7 +170,10 @@ class _ReportsPageState extends State<ReportsPage> {
                               : () {
                                   context.read<ReportCubit>().run(() async {
                                     if (filteredTxs.isEmpty) {
-                                      throw StateError(l10n.noDataToExport);
+                                      throw const AppException(
+                                        'No data to export',
+                                        code: 'no_data_to_export',
+                                      );
                                     }
                                     final file = await generator.exportCsvFile(
                                       filteredTxs,

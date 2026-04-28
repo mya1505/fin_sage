@@ -11,6 +11,7 @@ void main() {
     expect(localizeErrorMessage(l10nEn, 'category_already_exists'), l10nEn.categoryExists);
     expect(localizeErrorMessage(l10nEn, 'backup_invalid_file'), l10nEn.backupInvalidFile);
     expect(localizeErrorMessage(l10nEn, 'google_auth_headers_unavailable'), l10nEn.googleAuthUnavailable);
+    expect(localizeErrorMessage(l10nEn, 'no_data_to_export'), l10nEn.noDataToExport);
   });
 
   test('localizeErrorMessage uses active locale', () {

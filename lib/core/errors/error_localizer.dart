@@ -8,6 +8,7 @@ String localizeErrorMessage(AppLocalizations l10n, String rawMessage) {
     'backup_invalid_file' => l10n.backupInvalidFile,
     'backup_checksum_mismatch' => l10n.backupChecksumMismatch,
     'google_auth_headers_unavailable' => l10n.googleAuthUnavailable,
+    'no_data_to_export' => l10n.noDataToExport,
     _ => rawMessage,
   };
 }
