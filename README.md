@@ -64,8 +64,8 @@ Lihat folder `lib/` untuk pembagian:
    - `SENTRY_TRACE_SAMPLE_RATE` (0.0 - 1.0, default `0.1`)
 5. Commit dan push ke GitHub branch `main`
 6. Workflow GitHub Actions:
-   - `testing.yml`: jalan saat `push` ke `main` (security guardrail, format check, static analysis, unit/widget/integration tests)
-   - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release)
+   - `testing.yml`: jalan saat `push` ke `main` (security guardrail, format check, static analysis, unit/widget/integration tests, concurrency cancel run lama)
+   - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release, cleanup material signing setelah build)
    - Artefak release bernama `finsage-vX.Y.Z-release.apk` + file checksum `finsage-vX.Y.Z-release.apk.sha256`.
 
 ## Screenshots (Placeholder)
