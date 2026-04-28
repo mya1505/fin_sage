@@ -27,6 +27,7 @@ Lihat folder `lib/` untuk pembagian:
 - Pengguna belum login diarahkan ke halaman auth.
 - Pengguna login langsung masuk ke dashboard.
 - Restore backup menampilkan preview file berbasis model type-safe (`BackupFileModel`).
+- Backup cloud otomatis membersihkan backup lama (retensi 30 file terbaru) agar storage Drive tetap terkontrol.
 - Setelah restore backup berhasil, data transaksi/budget/dashboard otomatis di-refresh.
 - Preference tema dan bahasa disimpan lokal (`SharedPreferences`) dan dipulihkan saat startup.
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.

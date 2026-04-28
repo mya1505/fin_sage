@@ -53,6 +53,11 @@ class GoogleDriveDataSource {
     final chunks = await response.stream.toList();
     return chunks.expand((e) => e).toList();
   }
+
+  Future<void> deleteBackup(String fileId) async {
+    final api = await _driveApi();
+    await api.files.delete(fileId);
+  }
 }
 
 class _GoogleAuthClient extends http.BaseClient {

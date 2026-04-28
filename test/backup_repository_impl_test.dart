@@ -24,11 +24,41 @@ void main() {
   test('backupNow uploads database bytes with normalized filename', () async {
     when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
     when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+    when(() => remote.listBackups()).thenAnswer((_) async => []);
 
     await repository.backupNow();
 
     final captured = verify(() => remote.uploadBackup([1, 2, 3], captureAny())).captured.single as String;
     expect(captured, matches(RegExp(r'^finsage-backup-\d{8}_\d{6}\.db$')));
+  });
+
+  test('backupNow removes old backups beyond retention limit', () async {
+    when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
+    when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+
+    final files = List<drive.File>.generate(32, (index) {
+      return drive.File()
+        ..id = 'file-$index'
+        ..name = 'finsage-backup-$index.db'
+        ..createdTime = DateTime(2026, 4, 1).add(Duration(minutes: index));
+    });
+    when(() => remote.listBackups()).thenAnswer((_) async => files);
+    when(() => remote.deleteBackup(any())).thenAnswer((_) async {});
+
+    await repository.backupNow();
+
+    verify(() => remote.deleteBackup('file-1')).called(1);
+    verify(() => remote.deleteBackup('file-0')).called(1);
+  });
+
+  test('backupNow should still succeed when cleanup listing fails', () async {
+    when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
+    when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+    when(() => remote.listBackups()).thenThrow(Exception('drive unavailable'));
+
+    await repository.backupNow();
+
+    verify(() => remote.uploadBackup([1, 2, 3], any())).called(1);
   });
 
   test('restorePreview filters invalid ids and sorts by newest createdAt', () async {
