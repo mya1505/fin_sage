@@ -16,6 +16,7 @@ String mapErrorMessage(Object error) {
 
   const prefixes = <String>[
     'Exception: ',
+    'Exception:',
     'StateError: ',
     'Bad state: ',
     'ArgumentError: ',
