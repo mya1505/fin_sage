@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
@@ -16,7 +17,10 @@ class GoogleDriveDataSource {
     final account = silentAccount ?? (allowInteractiveSignIn ? await _googleSignIn.signIn() : null);
     final headers = await account?.authHeaders;
     if (headers == null) {
-      throw StateError('Google auth headers unavailable');
+      throw const AppException(
+        'Google auth headers unavailable',
+        code: 'google_auth_headers_unavailable',
+      );
     }
 
     final client = _GoogleAuthClient(headers);

@@ -2,6 +2,9 @@ import 'package:fin_sage/core/errors/app_exception.dart';
 
 String mapErrorMessage(Object error) {
   if (error is AppException) {
+    if (error.code != null && error.code!.isNotEmpty) {
+      return error.code!;
+    }
     return error.message;
   }
 

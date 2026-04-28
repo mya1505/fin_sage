@@ -308,14 +308,12 @@ class SettingsPage extends StatelessWidget {
   }
 
   String _errorMessage(AppLocalizations l10n, String rawMessage) {
-    final lower = rawMessage.toLowerCase();
-    if (lower.contains('backup file invalid or corrupted')) {
-      return l10n.backupInvalidFile;
-    }
-    if (lower.contains('backup checksum mismatch')) {
-      return l10n.backupChecksumMismatch;
-    }
-    return rawMessage;
+    return switch (rawMessage) {
+      'backup_invalid_file' => l10n.backupInvalidFile,
+      'backup_checksum_mismatch' => l10n.backupChecksumMismatch,
+      'google_auth_headers_unavailable' => l10n.googleAuthUnavailable,
+      _ => rawMessage,
+    };
   }
 }
 

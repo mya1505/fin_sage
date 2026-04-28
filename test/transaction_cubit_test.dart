@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/models/category_model.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
@@ -71,6 +72,28 @@ void main() {
     expect: () => [
       const TransactionState(loading: true),
       isA<TransactionState>().having((s) => s.error, 'error', contains('db failure')),
+    ],
+  );
+
+  blocTest<TransactionCubit, TransactionState>(
+    'createCategory emits stable code when repository throws app exception',
+    build: () {
+      when(
+        () => repository.saveCategory(any()),
+      ).thenThrow(const AppException('Category already exists', code: 'category_already_exists'));
+      return TransactionCubit(repository);
+    },
+    act: (cubit) => cubit.createCategory(
+      const CategoryModel(id: null, name: 'Food', colorHex: '#F4A261', icon: 'restaurant'),
+    ),
+    expect: () => [
+      const TransactionState(loading: false, items: [], categories: [], error: null),
+      const TransactionState(
+        loading: false,
+        items: [],
+        categories: [],
+        error: 'category_already_exists',
+      ),
     ],
   );
 

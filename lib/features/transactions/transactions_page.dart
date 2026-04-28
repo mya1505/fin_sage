@@ -59,10 +59,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 return;
               }
               final message = switch (state.error!) {
-                final error when error.contains('Category already exists') => l10n.categoryExists,
-                final error when error.contains('Category is still used') => l10n.categoryInUse,
-                final error when error.contains('Default category cannot be archived') =>
-                  l10n.defaultCategoryArchiveBlocked,
+                'category_already_exists' => l10n.categoryExists,
+                'category_in_use' => l10n.categoryInUse,
+                'default_category_archive_blocked' => l10n.defaultCategoryArchiveBlocked,
                 _ => state.error!,
               };
               ScaffoldMessenger.of(context).showSnackBar(

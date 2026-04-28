@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fin_sage/core/constants/app_constants.dart';
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/datasources/local/db_migration_service.dart';
 import 'package:fin_sage/data/datasources/local/secure_key_service.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
@@ -99,7 +100,10 @@ class LocalDatabaseDataSource {
       limit: 1,
     );
     if (existing.isNotEmpty) {
-      throw StateError('Category already exists');
+      throw const AppException(
+        'Category already exists',
+        code: 'category_already_exists',
+      );
     }
 
     await db.insert('categories', category.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
@@ -107,7 +111,10 @@ class LocalDatabaseDataSource {
 
   Future<void> archiveCategory(int categoryId) async {
     if (categoryId == 1) {
-      throw StateError('Default category cannot be archived');
+      throw const AppException(
+        'Default category cannot be archived',
+        code: 'default_category_archive_blocked',
+      );
     }
 
     final db = await _database();
@@ -117,7 +124,10 @@ class LocalDatabaseDataSource {
     );
     final usedCount = (usage.first['total'] as num?)?.toInt() ?? 0;
     if (usedCount > 0) {
-      throw StateError('Category is still used by transactions');
+      throw const AppException(
+        'Category is still used by transactions',
+        code: 'category_in_use',
+      );
     }
 
     await db.update(

@@ -3,6 +3,7 @@
   "appTitle": "FinSage",
   "signInGoogle": "Masuk dengan Google",
   "googleSignInConfigMissing": "GOOGLE_SERVER_CLIENT_ID belum diisi. Tambahkan di dart-define untuk autentikasi backup Google Drive.",
+  "googleAuthUnavailable": "Autentikasi Google tidak tersedia. Silakan login ulang lalu coba lagi.",
   "dashboardTitle": "Dasbor",
   "totalBalance": "Total Saldo",
   "monthlyIncome": "Pemasukan Bulanan",
