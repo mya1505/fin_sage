@@ -19,6 +19,7 @@ String mapErrorMessage(Object error) {
     'Exception:',
     'StateError: ',
     'Bad state: ',
+    'Bad state:',
     'ArgumentError: ',
     'Invalid argument(s): ',
   ];
