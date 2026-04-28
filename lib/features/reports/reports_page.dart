@@ -29,6 +29,21 @@ class _ReportsPageState extends State<ReportsPage> {
     final l10n = AppLocalizations.of(context);
     final generator = ReportGenerator();
     final localeTag = Localizations.localeOf(context).toLanguageTag();
+    final reportLabels = ReportContentLabels(
+      csvHeaderId: l10n.reportCsvHeaderId,
+      csvHeaderTitle: l10n.reportCsvHeaderTitle,
+      csvHeaderAmount: l10n.reportCsvHeaderAmount,
+      csvHeaderType: l10n.reportCsvHeaderType,
+      csvHeaderDate: l10n.reportCsvHeaderDate,
+      csvHeaderCategoryId: l10n.reportCsvHeaderCategoryId,
+      transactionTypeIncome: l10n.incomeType,
+      transactionTypeExpense: l10n.expenseType,
+      pdfDefaultTitle: l10n.reportPdfDefaultTitle,
+      pdfTransactionsLabel: l10n.reportPdfTransactionsLabel,
+      pdfIncomeLabel: l10n.reportPdfIncomeLabel,
+      pdfExpenseLabel: l10n.reportPdfExpenseLabel,
+      pdfNetBalanceLabel: l10n.reportPdfNetBalanceLabel,
+    );
 
     return ErrorBoundary(
       child: Scaffold(
@@ -132,7 +147,11 @@ class _ReportsPageState extends State<ReportsPage> {
                                     final title = l10n.monthlyReportTitle(
                                       DateFormat.yMMMM(localeTag).format(_selectedMonth),
                                     );
-                                    final pdf = await generator.generatePdf(filteredTxs, title: title);
+                                    final pdf = await generator.generatePdf(
+                                      filteredTxs,
+                                      title: title,
+                                      labels: reportLabels,
+                                    );
                                     await Printing.layoutPdf(onLayout: (_) async => pdf);
                                   });
                                 },
@@ -148,7 +167,10 @@ class _ReportsPageState extends State<ReportsPage> {
                                     if (filteredTxs.isEmpty) {
                                       throw StateError(l10n.noDataToExport);
                                     }
-                                    final file = await generator.exportCsvFile(filteredTxs);
+                                    final file = await generator.exportCsvFile(
+                                      filteredTxs,
+                                      labels: reportLabels,
+                                    );
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text(l10n.csvSaved(file.path))),

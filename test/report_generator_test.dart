@@ -38,4 +38,29 @@ void main() {
     expect(pdf, isNotEmpty);
     expect(pdf.length, greaterThan(100));
   });
+
+  test('generateCsv should use localized headers and type labels', () async {
+    final csv = await generator.generateCsv(
+      items,
+      labels: const ReportContentLabels(
+        csvHeaderId: 'id_lokal',
+        csvHeaderTitle: 'judul',
+        csvHeaderAmount: 'jumlah',
+        csvHeaderType: 'tipe',
+        csvHeaderDate: 'tanggal',
+        csvHeaderCategoryId: 'kategori_id',
+        transactionTypeIncome: 'Pemasukan',
+        transactionTypeExpense: 'Pengeluaran',
+        pdfDefaultTitle: 'Laporan',
+        pdfTransactionsLabel: 'Transaksi',
+        pdfIncomeLabel: 'Pemasukan',
+        pdfExpenseLabel: 'Pengeluaran',
+        pdfNetBalanceLabel: 'Saldo Bersih',
+      ),
+    );
+
+    expect(csv, contains('id_lokal,judul,jumlah,tipe,tanggal,kategori_id'));
+    expect(csv, contains('Pemasukan'));
+    expect(csv, contains('Pengeluaran'));
+  });
 }

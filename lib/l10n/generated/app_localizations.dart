@@ -65,6 +65,17 @@ class AppLocalizations {
       'csvSaved': 'CSV saved: {path}',
       'selectedMonthLabel': 'Month: {month}',
       'monthlyReportTitle': 'FinSage Report - {month}',
+      'reportPdfDefaultTitle': 'FinSage Financial Report',
+      'reportPdfTransactionsLabel': 'Transactions',
+      'reportPdfIncomeLabel': 'Income',
+      'reportPdfExpenseLabel': 'Expense',
+      'reportPdfNetBalanceLabel': 'Net Balance',
+      'reportCsvHeaderId': 'id',
+      'reportCsvHeaderTitle': 'title',
+      'reportCsvHeaderAmount': 'amount',
+      'reportCsvHeaderType': 'type',
+      'reportCsvHeaderDate': 'date',
+      'reportCsvHeaderCategoryId': 'category_id',
       'transactionCount': '{count} transactions',
       'netBalance': 'Net Balance',
       'darkMode': 'Dark Mode',
@@ -170,6 +181,17 @@ class AppLocalizations {
       'csvSaved': 'CSV tersimpan: {path}',
       'selectedMonthLabel': 'Bulan: {month}',
       'monthlyReportTitle': 'Laporan FinSage - {month}',
+      'reportPdfDefaultTitle': 'Laporan Keuangan FinSage',
+      'reportPdfTransactionsLabel': 'Transaksi',
+      'reportPdfIncomeLabel': 'Pemasukan',
+      'reportPdfExpenseLabel': 'Pengeluaran',
+      'reportPdfNetBalanceLabel': 'Saldo Bersih',
+      'reportCsvHeaderId': 'id',
+      'reportCsvHeaderTitle': 'judul',
+      'reportCsvHeaderAmount': 'jumlah',
+      'reportCsvHeaderType': 'tipe',
+      'reportCsvHeaderDate': 'tanggal',
+      'reportCsvHeaderCategoryId': 'kategori_id',
       'transactionCount': '{count} transaksi',
       'netBalance': 'Saldo Bersih',
       'darkMode': 'Mode Gelap',
@@ -277,6 +299,17 @@ class AppLocalizations {
   String csvSaved(String path) => _t('csvSaved').replaceAll('{path}', path);
   String selectedMonthLabel(String month) => _t('selectedMonthLabel').replaceAll('{month}', month);
   String monthlyReportTitle(String month) => _t('monthlyReportTitle').replaceAll('{month}', month);
+  String get reportPdfDefaultTitle => _t('reportPdfDefaultTitle');
+  String get reportPdfTransactionsLabel => _t('reportPdfTransactionsLabel');
+  String get reportPdfIncomeLabel => _t('reportPdfIncomeLabel');
+  String get reportPdfExpenseLabel => _t('reportPdfExpenseLabel');
+  String get reportPdfNetBalanceLabel => _t('reportPdfNetBalanceLabel');
+  String get reportCsvHeaderId => _t('reportCsvHeaderId');
+  String get reportCsvHeaderTitle => _t('reportCsvHeaderTitle');
+  String get reportCsvHeaderAmount => _t('reportCsvHeaderAmount');
+  String get reportCsvHeaderType => _t('reportCsvHeaderType');
+  String get reportCsvHeaderDate => _t('reportCsvHeaderDate');
+  String get reportCsvHeaderCategoryId => _t('reportCsvHeaderCategoryId');
   String transactionCount(int count) => _t('transactionCount').replaceAll('{count}', count.toString());
   String get netBalance => _t('netBalance');
   String get darkMode => _t('darkMode');
