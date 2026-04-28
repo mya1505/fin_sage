@@ -20,8 +20,10 @@ class Validators {
     if (input == null) {
       return 'dateRequired';
     }
-    final now = DateTime.now();
-    if (input.isAfter(now.add(const Duration(days: 1)))) {
+    final today = DateTime.now();
+    final selectedDate = DateTime(input.year, input.month, input.day);
+    final maxAllowed = DateTime(today.year, today.month, today.day);
+    if (selectedDate.isAfter(maxAllowed)) {
       return 'dateFutureNotAllowed';
     }
     return null;

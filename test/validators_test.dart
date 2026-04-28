@@ -30,6 +30,22 @@ void main() {
     });
   });
 
+  group('Validators.requiredDate', () {
+    test('returns required error when date is null', () {
+      expect(Validators.requiredDate(null), 'dateRequired');
+    });
+
+    test('returns future error when date is after today', () {
+      final tomorrow = DateTime.now().add(const Duration(days: 1));
+      expect(Validators.requiredDate(tomorrow), 'dateFutureNotAllowed');
+    });
+
+    test('returns null for today date', () {
+      final today = DateTime.now();
+      expect(Validators.requiredDate(today), isNull);
+    });
+  });
+
   group('Validators.hexColor', () {
     test('returns null for empty value', () {
       expect(Validators.hexColor(''), isNull);

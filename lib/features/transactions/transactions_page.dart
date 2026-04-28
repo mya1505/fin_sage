@@ -364,7 +364,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           context: sheetContext,
                           initialDate: selectedDate,
                           firstDate: DateTime(2000),
-                          lastDate: DateTime.now().add(const Duration(days: 1)),
+                          lastDate: DateTime.now(),
                         );
                         if (date != null) {
                           setState(() => selectedDate = date);
