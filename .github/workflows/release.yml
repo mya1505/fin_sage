@@ -77,6 +77,25 @@ jobs:
       - name: Prepare Android platform
         run: flutter create . --platforms=android --project-name fin_sage
 
+      - name: Release preflight checks
+        run: |
+          test -f pubspec.yaml
+          test -f android/app.keystore.placeholder
+          grep -q "REPLACE_WITH_REAL_KEYSTORE" android/app.keystore.placeholder
+
+          if [[ "${GITHUB_REF_NAME}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            tag_version="${BASH_REMATCH[1]}"
+            pubspec_version="$(sed -n 's/^version: \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' pubspec.yaml | head -n1)"
+            if [ -z "$pubspec_version" ]; then
+              echo "Cannot parse semantic version from pubspec.yaml"
+              exit 1
+            fi
+            if [ "$tag_version" != "$pubspec_version" ]; then
+              echo "Tag version ($tag_version) does not match pubspec version ($pubspec_version)."
+              exit 1
+            fi
+          fi
+
       - name: Validate keystore secrets
         run: |
           if [ -z "$KEYSTORE_B64" ] || [ -z "$KEYSTORE_PASS" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASS" ]; then
