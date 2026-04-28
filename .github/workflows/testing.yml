@@ -67,6 +67,7 @@ jobs:
         id: integration
         timeout-minutes: 3
         run: |
+          touch /tmp/integration_test.log
           set +e
           timeout 2m flutter test integration_test -d linux > /tmp/integration_test.log 2>&1
           test_exit_code=$?
@@ -84,6 +85,7 @@ jobs:
         with:
           name: integration-test-log
           path: /tmp/integration_test.log
+          if-no-files-found: ignore
 
       - name: Integration test summary
         if: always()
