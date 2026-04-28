@@ -60,22 +60,27 @@ class DashboardPage extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     children: [
                       PremiumCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(l10n.totalBalance),
-                            const SizedBox(height: 8),
-                            Text(
-                              state.balance.toCurrency(locale),
-                              textScaler: MediaQuery.textScalerOf(context),
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
-                            ),
-                            const SizedBox(height: 16),
-                            Text('${l10n.monthlyIncome}: ${state.income.toCurrency(locale)}'),
-                            Text('${l10n.monthlyExpense}: ${state.expense.toCurrency(locale)}'),
-                            const SizedBox(height: 8),
-                            Text('${l10n.monthlyTransactions}: ${state.monthlyTransactionCount}'),
-                          ],
+                        child: Semantics(
+                          container: true,
+                          label:
+                              '${l10n.totalBalance}: ${state.balance.toCurrency(locale)}. ${l10n.monthlyIncome}: ${state.income.toCurrency(locale)}. ${l10n.monthlyExpense}: ${state.expense.toCurrency(locale)}.',
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(l10n.totalBalance),
+                              const SizedBox(height: 8),
+                              Text(
+                                state.balance.toCurrency(locale),
+                                textScaler: MediaQuery.textScalerOf(context),
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                              ),
+                              const SizedBox(height: 16),
+                              Text('${l10n.monthlyIncome}: ${state.income.toCurrency(locale)}'),
+                              Text('${l10n.monthlyExpense}: ${state.expense.toCurrency(locale)}'),
+                              const SizedBox(height: 8),
+                              Text('${l10n.monthlyTransactions}: ${state.monthlyTransactionCount}'),
+                            ],
+                          ),
                         ),
                       ),
                       if (state.error != null) ...[
@@ -92,7 +97,11 @@ class DashboardPage extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: 16),
-                      AnimatedBalanceChart(spots: spots),
+                      Semantics(
+                        container: true,
+                        label: l10n.balanceTrendChartLabel,
+                        child: AnimatedBalanceChart(spots: spots),
+                      ),
                       const SizedBox(height: 16),
                       Text(l10n.recentTransactions, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 10),

@@ -29,6 +29,7 @@ class AppLocalizations {
       'monthlyIncome': 'Monthly Income',
       'monthlyExpense': 'Monthly Expense',
       'monthlyTransactions': 'Monthly Transactions',
+      'balanceTrendChartLabel': 'Balance trend chart',
       'recentTransactions': 'Recent Transactions',
       'transactionsTitle': 'Transactions',
       'budgetsTitle': 'Budgets',
@@ -131,6 +132,7 @@ class AppLocalizations {
       'monthlyIncome': 'Pemasukan Bulanan',
       'monthlyExpense': 'Pengeluaran Bulanan',
       'monthlyTransactions': 'Transaksi Bulanan',
+      'balanceTrendChartLabel': 'Grafik tren saldo',
       'recentTransactions': 'Transaksi Terbaru',
       'transactionsTitle': 'Transaksi',
       'budgetsTitle': 'Anggaran',
@@ -235,6 +237,7 @@ class AppLocalizations {
   String get monthlyIncome => _t('monthlyIncome');
   String get monthlyExpense => _t('monthlyExpense');
   String get monthlyTransactions => _t('monthlyTransactions');
+  String get balanceTrendChartLabel => _t('balanceTrendChartLabel');
   String get recentTransactions => _t('recentTransactions');
   String get transactionsTitle => _t('transactionsTitle');
   String get budgetsTitle => _t('budgetsTitle');

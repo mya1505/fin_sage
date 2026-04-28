@@ -46,6 +46,7 @@ Lihat folder `lib/` untuk pembagian:
 - Settings menampilkan status auto-backup (attempt/success/error) dan tombol validasi job background.
 - Auth bootstrap melakukan silent session restore agar status login lebih konsisten setelah restart.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
+- Restore backup sekarang memvalidasi file backup dan menolak file korup/tidak valid sebelum overwrite database lokal.
 
 ## Setup
 
@@ -58,6 +59,7 @@ Lihat folder `lib/` untuk pembagian:
 5. Workflow GitHub Actions:
    - `testing.yml`: jalan saat `push` ke `main` (format check, static analysis, unit/widget/integration tests)
    - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, verifikasi signature + checksum, publish GitHub Release)
+   - Artefak release bernama `finsage-vX.Y.Z-release.apk` + file checksum `finsage-vX.Y.Z-release.apk.sha256`.
 
 ## Screenshots (Placeholder)
 

@@ -7,6 +7,7 @@ import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/features/settings/settings_page.dart';
@@ -190,5 +191,92 @@ void main() {
     verify(() => txRepo.fetchCategories()).called(greaterThanOrEqualTo(1));
     verify(() => budgetRepo.fetchBudgets()).called(greaterThanOrEqualTo(1));
     verify(() => txRepo.monthlySummary()).called(greaterThanOrEqualTo(1));
+  });
+
+  testWidgets('settings restore should show invalid backup message', (tester) async {
+    final txRepo = MockTransactionRepository();
+    final budgetRepo = MockBudgetRepository();
+    final backupRepo = MockBackupRepository();
+    final settingsStorage = MockSettingsStorage();
+    final localDb = MockLocalDatabaseDataSource();
+    final notificationService = MockBudgetNotificationService();
+    final telemetryStorage = MockAutoBackupTelemetryStorage();
+    final validationScheduler = MockAutoBackupValidationScheduler();
+
+    final txCubit = TransactionCubit(txRepo);
+    final budgetCubit = BudgetCubit(budgetRepo, notificationService, settingsStorage);
+    final dashboardCubit = DashboardCubit(txRepo);
+    final settingsCubit =
+        SettingsCubit(backupRepo, settingsStorage, localDb, telemetryStorage, validationScheduler);
+
+    addTearDown(txCubit.close);
+    addTearDown(budgetCubit.close);
+    addTearDown(dashboardCubit.close);
+    addTearDown(settingsCubit.close);
+
+    when(() => txRepo.fetchCategories()).thenAnswer(
+      (_) async => const [CategoryModel(id: 1, name: 'General', colorHex: '#0D3B66', icon: 'wallet')],
+    );
+    when(() => txRepo.fetchTransactions()).thenAnswer((_) async => []);
+    when(() => txRepo.monthlySummary()).thenAnswer((_) async => {'income': 0, 'expense': 0});
+
+    when(() => budgetRepo.fetchBudgets()).thenAnswer((_) async => []);
+    when(() => settingsStorage.loadNotificationsEnabled()).thenAnswer((_) async => true);
+
+    when(() => settingsStorage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
+    when(() => settingsStorage.loadLocale()).thenAnswer((_) async => null);
+    when(() => settingsStorage.loadLastBackupAt()).thenAnswer((_) async => null);
+    when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
+
+    when(() => backupRepo.restorePreview()).thenAnswer(
+      (_) async => const [
+        BackupFileModel(
+          id: 'file-1',
+          name: 'finsage-backup-20260428_120000.db',
+          createdAt: null,
+          size: 1024,
+        ),
+      ],
+    );
+    when(() => backupRepo.restoreFromFile('file-1')).thenThrow(
+      const AppException('Backup file invalid or corrupted', code: 'backup_invalid_file'),
+    );
+
+    await settingsCubit.loadSettings();
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<TransactionCubit>.value(value: txCubit),
+          BlocProvider<BudgetCubit>.value(value: budgetCubit),
+          BlocProvider<DashboardCubit>.value(value: dashboardCubit),
+          BlocProvider<SettingsCubit>.value(value: settingsCubit),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SettingsPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Restore Preview'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.download).first);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Restore'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Backup file is invalid or corrupted'), findsOneWidget);
   });
 }

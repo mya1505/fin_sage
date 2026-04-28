@@ -8,6 +8,7 @@
   "monthlyIncome": "Monthly Income",
   "monthlyExpense": "Monthly Expense",
   "monthlyTransactions": "Monthly Transactions",
+  "balanceTrendChartLabel": "Balance trend chart",
   "recentTransactions": "Recent Transactions",
   "transactionsTitle": "Transactions",
   "budgetsTitle": "Budgets",
