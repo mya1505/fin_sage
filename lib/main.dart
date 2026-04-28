@@ -23,9 +23,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocator.init();
-  await sl<BudgetNotificationService>().initialize();
-  await BackupScheduler.initialize();
-  await BackupScheduler.scheduleEvery24Hours();
+  await _bootstrapServicesSafely();
 
   await SentryFlutter.init(
     (options) {
@@ -51,6 +49,35 @@ Future<void> main() async {
       );
     },
   );
+}
+
+Future<void> _bootstrapServicesSafely() async {
+  try {
+    await sl<BudgetNotificationService>().initialize();
+  } catch (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'FinSage bootstrap',
+        context: ErrorDescription('while initializing budget notifications'),
+      ),
+    );
+  }
+
+  try {
+    await BackupScheduler.initialize();
+    await BackupScheduler.scheduleEvery24Hours();
+  } catch (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'FinSage bootstrap',
+        context: ErrorDescription('while scheduling auto-backup background task'),
+      ),
+    );
+  }
 }
 
 class FinSageApp extends StatelessWidget {

@@ -48,6 +48,7 @@ Lihat folder `lib/` untuk pembagian:
 - Settings menampilkan riwayat waktu backup terakhir.
 - Settings menampilkan status auto-backup (attempt/success/error) dan tombol validasi job background.
 - Auth bootstrap melakukan silent session restore agar status login lebih konsisten setelah restart.
+- Inisialisasi service startup (notifikasi + auto-backup scheduler) bersifat fail-safe agar app tetap bisa boot jika plugin background gagal.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 - Restore backup sekarang memvalidasi file backup dan menolak file korup/tidak valid sebelum overwrite database lokal.
 
