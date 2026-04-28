@@ -43,6 +43,7 @@ class LocalDatabaseDataSource {
   }
 
   Future<List<int>> databaseBytes() async {
+    await _database();
     final file = File(await databasePath());
     return file.readAsBytes();
   }
@@ -144,13 +145,16 @@ class LocalDatabaseDataSource {
   }
 
   Future<void> replaceDatabaseFile(List<int> bytes) async {
+    final activeDb = _db;
+    _db = null;
+    await activeDb?.close();
+
     final path = await databasePath();
     final file = File(path);
     if (await file.exists()) {
       await file.delete();
     }
     await file.writeAsBytes(bytes, flush: true);
-    _db = null;
   }
 
   Future<void> resetLocalData() async {
