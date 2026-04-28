@@ -105,6 +105,7 @@ class AppLocalizations {
       'confirmDeleteBody': 'This transaction will be permanently removed. Continue?',
       'cancelLabel': 'Cancel',
       'deleteActionLabel': 'Delete',
+      'updateActionLabel': 'Update',
       'restoreActionLabel': 'Restore'
     },
     'id': {
@@ -193,6 +194,7 @@ class AppLocalizations {
       'confirmDeleteBody': 'Transaksi ini akan dihapus permanen. Lanjutkan?',
       'cancelLabel': 'Batal',
       'deleteActionLabel': 'Hapus',
+      'updateActionLabel': 'Perbarui',
       'restoreActionLabel': 'Restore'
     }
   };
@@ -281,6 +283,7 @@ class AppLocalizations {
   String get invalidColorHex => _t('invalidColorHex');
   String get cancelLabel => _t('cancelLabel');
   String get deleteActionLabel => _t('deleteActionLabel');
+  String get updateActionLabel => _t('updateActionLabel');
   String get confirmDeleteTitle => _t('confirmDeleteTitle');
   String get confirmDeleteBody => _t('confirmDeleteBody');
   String get restoreActionLabel => _t('restoreActionLabel');

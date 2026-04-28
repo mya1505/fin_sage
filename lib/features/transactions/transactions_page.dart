@@ -45,7 +45,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _showCreateForm(context),
+          onPressed: () => _showTransactionForm(context),
           label: Text(l10n.addTransaction),
           icon: const Icon(Icons.add),
         ),
@@ -181,6 +181,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 style: TextStyle(color: amountColor, fontWeight: FontWeight.w700),
                               ),
                               IconButton(
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: tx.id == null ? null : () => _showTransactionForm(context, existing: tx),
+                              ),
+                              IconButton(
                                 icon: const Icon(Icons.delete_outline),
                                 onPressed: tx.id == null ? null : () => _confirmDelete(context, tx.id!),
                               ),
@@ -246,16 +250,19 @@ class _TransactionsPageState extends State<TransactionsPage> {
     }
   }
 
-  Future<void> _showCreateForm(BuildContext context) async {
+  Future<void> _showTransactionForm(BuildContext context, {TransactionModel? existing}) async {
     final l10n = AppLocalizations.of(context)!;
     final formKey = GlobalKey<FormState>();
-    final titleCtrl = TextEditingController();
-    final amountCtrl = TextEditingController();
-    DateTime selectedDate = DateTime.now();
-    TransactionType selectedType = TransactionType.expense;
+    final titleCtrl = TextEditingController(text: existing?.title ?? '');
+    final amountCtrl = TextEditingController(text: existing == null ? '' : existing.amount.toStringAsFixed(0));
+    DateTime selectedDate = existing?.date ?? DateTime.now();
+    TransactionType selectedType = existing?.type ?? TransactionType.expense;
     final state = context.read<TransactionCubit>().state;
     final categories = state.categories;
-    int selectedCategoryId = categories.isNotEmpty ? (categories.first.id ?? 1) : 1;
+    final hasExistingCategory = existing != null && categories.any((category) => category.id == existing.categoryId);
+    int selectedCategoryId = hasExistingCategory
+        ? existing!.categoryId
+        : (categories.isNotEmpty ? (categories.first.id ?? 1) : (existing?.categoryId ?? 1));
 
     await showModalBottomSheet<void>(
       context: context,
@@ -392,19 +399,23 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           return;
                         }
 
-                        context.read<TransactionCubit>().createTransaction(
-                              TransactionModel(
-                                id: null,
-                                title: titleCtrl.text.trim(),
-                                amount: double.parse(amountCtrl.text.replaceAll(',', '.')),
-                                date: selectedDate,
-                                categoryId: selectedCategoryId,
-                                type: selectedType,
-                              ),
-                            );
+                        final model = TransactionModel(
+                          id: existing?.id,
+                          title: titleCtrl.text.trim(),
+                          amount: double.parse(amountCtrl.text.replaceAll(',', '.')),
+                          date: selectedDate,
+                          categoryId: selectedCategoryId,
+                          type: selectedType,
+                        );
+
+                        if (existing == null) {
+                          context.read<TransactionCubit>().createTransaction(model);
+                        } else {
+                          context.read<TransactionCubit>().updateTransaction(model);
+                        }
                         Navigator.pop(sheetContext);
                       },
-                      child: Text(l10n.saveLabel),
+                      child: Text(existing == null ? l10n.saveLabel : l10n.updateActionLabel),
                     ),
                   ],
                 ),

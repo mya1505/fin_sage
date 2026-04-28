@@ -15,6 +15,16 @@ void main() {
     registerFallbackValue(
       const CategoryModel(id: null, name: 'Fallback', colorHex: '#0D3B66', icon: 'wallet'),
     );
+    registerFallbackValue(
+      TransactionModel(
+        id: 1,
+        title: 'Fallback',
+        amount: 1,
+        date: DateTime(2026, 1, 1),
+        categoryId: 1,
+        type: TransactionType.expense,
+      ),
+    );
   });
 
   const categories = [
@@ -98,5 +108,31 @@ void main() {
       TransactionState(loading: false, items: transactions, categories: categories),
     ],
     verify: (_) => verify(() => repository.archiveCategory(2)).called(1),
+  );
+
+  blocTest<TransactionCubit, TransactionState>(
+    'updateTransaction updates item and reloads list',
+    build: () {
+      when(() => repository.updateTransaction(any())).thenAnswer((_) async {});
+      when(() => repository.fetchTransactions()).thenAnswer((_) async => transactions);
+      when(() => repository.fetchCategories()).thenAnswer((_) async => categories);
+      return TransactionCubit(repository);
+    },
+    act: (cubit) => cubit.updateTransaction(
+      TransactionModel(
+        id: 1,
+        title: 'Lunch Updated',
+        amount: 50000,
+        date: DateTime(2026, 4, 27),
+        categoryId: 1,
+        type: TransactionType.expense,
+      ),
+    ),
+    expect: () => [
+      const TransactionState(loading: false, items: [], categories: [], error: null),
+      const TransactionState(loading: true),
+      TransactionState(loading: false, items: transactions, categories: categories),
+    ],
+    verify: (_) => verify(() => repository.updateTransaction(any())).called(1),
   );
 }

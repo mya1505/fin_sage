@@ -4,6 +4,7 @@ import 'package:fin_sage/data/models/transaction_model.dart';
 abstract class TransactionRepository {
   Future<List<TransactionModel>> fetchTransactions();
   Future<void> saveTransaction(TransactionModel transaction);
+  Future<void> updateTransaction(TransactionModel transaction);
   Future<void> deleteTransaction(int transactionId);
   Future<List<CategoryModel>> fetchCategories();
   Future<void> saveCategory(CategoryModel category);

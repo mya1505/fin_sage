@@ -84,5 +84,6 @@
   "confirmDeleteBody": "This transaction will be permanently removed. Continue?",
   "cancelLabel": "Cancel",
   "deleteActionLabel": "Delete",
+  "updateActionLabel": "Update",
   "restoreActionLabel": "Restore"
 }

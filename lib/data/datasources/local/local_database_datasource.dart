@@ -58,6 +58,20 @@ class LocalDatabaseDataSource {
     await db.insert('transactions', transaction.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<void> updateTransaction(TransactionModel transaction) async {
+    if (transaction.id == null) {
+      throw ArgumentError('Transaction id is required for update');
+    }
+    final db = await _database();
+    await db.update(
+      'transactions',
+      transaction.toMap(),
+      where: 'id = ?',
+      whereArgs: [transaction.id],
+      conflictAlgorithm: ConflictAlgorithm.abort,
+    );
+  }
+
   Future<void> deleteTransaction(int transactionId) async {
     final db = await _database();
     await db.delete('transactions', where: 'id = ?', whereArgs: [transactionId]);

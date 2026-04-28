@@ -31,6 +31,7 @@ Lihat folder `lib/` untuk pembagian:
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
 - Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
 - Form transaksi mendukung tipe `income/expense` dan pemilihan kategori.
+- Transaksi mendukung edit/update langsung dari daftar.
 - Kategori kustom dapat ditambah langsung dari halaman transaksi.
 - Kategori non-default dapat diarsipkan jika belum dipakai oleh transaksi.
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.

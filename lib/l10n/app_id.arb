@@ -84,5 +84,6 @@
   "confirmDeleteBody": "Transaksi ini akan dihapus permanen. Lanjutkan?",
   "cancelLabel": "Batal",
   "deleteActionLabel": "Hapus",
+  "updateActionLabel": "Perbarui",
   "restoreActionLabel": "Restore"
 }

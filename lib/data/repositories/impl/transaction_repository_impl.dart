@@ -26,6 +26,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<void> saveTransaction(TransactionModel transaction) => _local.saveTransaction(transaction);
 
   @override
+  Future<void> updateTransaction(TransactionModel transaction) => _local.updateTransaction(transaction);
+
+  @override
   Future<void> deleteTransaction(int transactionId) => _local.deleteTransaction(transactionId);
 
   @override
