@@ -9,6 +9,7 @@ import 'package:fin_sage/logic/dashboard/dashboard_cubit.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -60,6 +61,7 @@ class SettingsPage extends StatelessWidget {
               }
 
               if (message != null) {
+                HapticFeedback.lightImpact();
                 messenger.showSnackBar(SnackBar(content: Text(message)));
               }
             },
@@ -107,7 +109,12 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   FilledButton.icon(
-                    onPressed: state.backupInProgress ? null : cubit.backupNow,
+                    onPressed: state.backupInProgress
+                        ? null
+                        : () async {
+                            await HapticFeedback.mediumImpact();
+                            await cubit.backupNow();
+                          },
                     icon: const Icon(Icons.cloud_upload),
                     label: Text(l10n.backupNow),
                   ),
@@ -121,7 +128,12 @@ class SettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    onPressed: state.backupInProgress ? null : cubit.loadRestorePreview,
+                    onPressed: state.backupInProgress
+                        ? null
+                        : () async {
+                            await HapticFeedback.selectionClick();
+                            await cubit.loadRestorePreview();
+                          },
                     icon: const Icon(Icons.restore),
                     label: Text(l10n.restorePreview),
                   ),

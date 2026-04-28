@@ -7,6 +7,7 @@ import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -247,6 +248,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
     );
 
     if (approved == true && context.mounted) {
+      await HapticFeedback.mediumImpact();
       await context.read<TransactionCubit>().removeTransaction(id);
     }
   }
@@ -391,7 +393,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     ),
                     const SizedBox(height: 16),
                     FilledButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (!formKey.currentState!.validate()) {
                           return;
                         }
@@ -409,6 +411,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           categoryId: selectedCategoryId,
                           type: selectedType,
                         );
+                        await HapticFeedback.lightImpact();
 
                         if (existing == null) {
                           context.read<TransactionCubit>().createTransaction(model);
@@ -485,6 +488,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                           if (!approved || category.id == null) {
                                             return;
                                           }
+                                          await HapticFeedback.selectionClick();
                                           await cubit.archiveCategory(category.id!);
                                           if (cubit.state.error == null) {
                                             setDialogState(() {
@@ -529,6 +533,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     if (!formKey.currentState!.validate()) {
                       return;
                     }
+                    await HapticFeedback.lightImpact();
                     await cubit.createCategory(
                           CategoryModel(
                             id: null,

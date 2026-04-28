@@ -8,6 +8,7 @@ import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/budgets/budget_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -172,6 +173,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
     );
 
     if (approved == true && context.mounted) {
+      await HapticFeedback.mediumImpact();
       await context.read<BudgetCubit>().removeBudget(budgetId);
     }
   }
@@ -291,6 +293,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                               if (!formKey.currentState!.validate()) {
                                 return;
                               }
+                              await HapticFeedback.lightImpact();
                               await context.read<BudgetCubit>().saveBudget(
                                     BudgetModel(
                                       id: existing?.id,
