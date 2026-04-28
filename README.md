@@ -27,6 +27,7 @@ Lihat folder `lib/` untuk pembagian:
 - Pengguna belum login diarahkan ke halaman auth.
 - Pengguna login langsung masuk ke dashboard.
 - Restore backup menampilkan preview file berbasis model type-safe (`BackupFileModel`).
+- Setelah restore backup berhasil, data transaksi/budget/dashboard otomatis di-refresh.
 - Preference tema dan bahasa disimpan lokal (`SharedPreferences`) dan dipulihkan saat startup.
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
 - Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
@@ -42,15 +43,19 @@ Lihat folder `lib/` untuk pembagian:
 - Settings menyediakan aksi sign out dengan konfirmasi.
 - Settings mendukung toggle notifikasi budget dan reset data lokal aman.
 - Settings menampilkan riwayat waktu backup terakhir.
+- Settings menampilkan status auto-backup (attempt/success/error) dan tombol validasi job background.
 - Auth bootstrap melakukan silent session restore agar status login lebih konsisten setelah restart.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup
 
 1. Konfigurasi Android keystore sesuai [keystore_instructions.md](keystore_instructions.md)
-2. Siapkan Google Sign-In di Android/iOS
-3. Commit dan push ke GitHub branch `main`
-4. Workflow GitHub Actions:
+2. Siapkan Google Sign-In di Android/iOS (lihat [docs/android_google_signin_setup.md](docs/android_google_signin_setup.md))
+3. Set `dart-define` Google OAuth saat build Android:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_SERVER_CLIENT_ID`
+4. Commit dan push ke GitHub branch `main`
+5. Workflow GitHub Actions:
    - `testing.yml`: jalan saat `push` ke `main` (unit/widget/integration tests)
    - `release.yml`: jalan saat push tag `vX.Y.Z` (test gate, build APK signed, build iOS no-codesign, publish GitHub Release)
 
@@ -65,3 +70,4 @@ Lihat folder `lib/` untuk pembagian:
 - Keystore binary tidak disimpan di repository.
 - File placeholder keystore: `android/app.keystore.placeholder`.
 - Lokalisasi source: `lib/l10n/app_en.arb`, `lib/l10n/app_id.arb`.
+- Release workflow Android akan gagal jika secret `GOOGLE_CLIENT_ID` dan `GOOGLE_SERVER_CLIENT_ID` belum diisi.

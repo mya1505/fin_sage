@@ -1,3 +1,4 @@
+import 'package:fin_sage/data/datasources/local/auto_backup_telemetry_storage.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
@@ -19,6 +20,7 @@ class MockBackupRepository extends Mock implements BackupRepository {}
 class MockSettingsStorage extends Mock implements SettingsStorage {}
 
 class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
+class MockAutoBackupTelemetryStorage extends Mock implements AutoBackupTelemetryStorage {}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -98,7 +100,8 @@ void main() {
     final backupRepository = MockBackupRepository();
     final storage = MockSettingsStorage();
     final localDatabase = MockLocalDatabaseDataSource();
-    final cubit = SettingsCubit(backupRepository, storage, localDatabase);
+    final telemetry = MockAutoBackupTelemetryStorage();
+    final cubit = SettingsCubit(backupRepository, storage, localDatabase, telemetry);
     addTearDown(cubit.close);
 
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
@@ -106,6 +109,7 @@ void main() {
     when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => true);
     when(() => storage.loadLastBackupAt()).thenAnswer((_) async => null);
     when(() => storage.saveLastBackupAt(any())).thenAnswer((_) async {});
+    when(() => telemetry.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
 
     const preview = [
       BackupFileModel(

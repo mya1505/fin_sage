@@ -22,6 +22,8 @@ class AppLocalizations {
     'en': {
       'appTitle': 'FinSage',
       'signInGoogle': 'Continue with Google',
+      'googleSignInConfigMissing':
+          'GOOGLE_SERVER_CLIENT_ID is not set. Define it in dart-define for Google Drive backup auth.',
       'dashboardTitle': 'Dashboard',
       'totalBalance': 'Total Balance',
       'monthlyIncome': 'Monthly Income',
@@ -75,6 +77,14 @@ class AppLocalizations {
       'restorePreview': 'Restore Preview',
       'noBackupFiles': 'No backup files found',
       'backupCompleted': 'Backup completed successfully',
+      'autoBackupValidationScheduled': 'Auto-backup validation has been scheduled',
+      'validateAutoBackupLabel': 'Validate Auto Backup',
+      'autoBackupStatusTitle': 'Auto Backup Status',
+      'autoBackupNeverRun': 'Last attempt: never',
+      'autoBackupNoSuccessYet': 'Last success: not yet',
+      'autoBackupLastAttempt': 'Last attempt: {value}',
+      'autoBackupLastSuccess': 'Last success: {value}',
+      'autoBackupLastError': 'Last error: {value}',
       'restorePreviewLoaded': 'Restore preview loaded',
       'restoreCompleted': 'Restore completed successfully',
       'restoreConfirmTitle': 'Confirm Restore',
@@ -113,6 +123,8 @@ class AppLocalizations {
     'id': {
       'appTitle': 'FinSage',
       'signInGoogle': 'Masuk dengan Google',
+      'googleSignInConfigMissing':
+          'GOOGLE_SERVER_CLIENT_ID belum diisi. Tambahkan di dart-define untuk autentikasi backup Google Drive.',
       'dashboardTitle': 'Dasbor',
       'totalBalance': 'Total Saldo',
       'monthlyIncome': 'Pemasukan Bulanan',
@@ -166,6 +178,14 @@ class AppLocalizations {
       'restorePreview': 'Pratinjau Restore',
       'noBackupFiles': 'Belum ada file backup',
       'backupCompleted': 'Backup berhasil',
+      'autoBackupValidationScheduled': 'Validasi auto-backup telah dijadwalkan',
+      'validateAutoBackupLabel': 'Validasi Auto Backup',
+      'autoBackupStatusTitle': 'Status Auto Backup',
+      'autoBackupNeverRun': 'Percobaan terakhir: belum pernah',
+      'autoBackupNoSuccessYet': 'Sukses terakhir: belum ada',
+      'autoBackupLastAttempt': 'Percobaan terakhir: {value}',
+      'autoBackupLastSuccess': 'Sukses terakhir: {value}',
+      'autoBackupLastError': 'Error terakhir: {value}',
       'restorePreviewLoaded': 'Pratinjau restore berhasil dimuat',
       'restoreCompleted': 'Restore berhasil',
       'restoreConfirmTitle': 'Konfirmasi Restore',
@@ -207,6 +227,7 @@ class AppLocalizations {
 
   String get appTitle => _t('appTitle');
   String get signInGoogle => _t('signInGoogle');
+  String get googleSignInConfigMissing => _t('googleSignInConfigMissing');
   String get dashboardTitle => _t('dashboardTitle');
   String get totalBalance => _t('totalBalance');
   String get monthlyIncome => _t('monthlyIncome');
@@ -260,6 +281,14 @@ class AppLocalizations {
   String get restorePreview => _t('restorePreview');
   String get noBackupFiles => _t('noBackupFiles');
   String get backupCompleted => _t('backupCompleted');
+  String get autoBackupValidationScheduled => _t('autoBackupValidationScheduled');
+  String get validateAutoBackupLabel => _t('validateAutoBackupLabel');
+  String get autoBackupStatusTitle => _t('autoBackupStatusTitle');
+  String get autoBackupNeverRun => _t('autoBackupNeverRun');
+  String get autoBackupNoSuccessYet => _t('autoBackupNoSuccessYet');
+  String autoBackupLastAttempt(String value) => _t('autoBackupLastAttempt').replaceAll('{value}', value);
+  String autoBackupLastSuccess(String value) => _t('autoBackupLastSuccess').replaceAll('{value}', value);
+  String autoBackupLastError(String value) => _t('autoBackupLastError').replaceAll('{value}', value);
   String get restorePreviewLoaded => _t('restorePreviewLoaded');
   String get restoreCompleted => _t('restoreCompleted');
   String get restoreConfirmTitle => _t('restoreConfirmTitle');

@@ -3,7 +3,9 @@ import 'package:fin_sage/data/datasources/local/drift_query_service.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/secure_key_service.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
+import 'package:fin_sage/data/datasources/local/auto_backup_telemetry_storage.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
+import 'package:fin_sage/core/constants/google_auth_config.dart';
 import 'package:fin_sage/data/repositories/auth_repository.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
@@ -33,6 +35,9 @@ class ServiceLocator {
 
     sl.registerLazySingleton(() => const FlutterSecureStorage());
     sl.registerLazySingleton<SettingsStorage>(() => SharedPrefsSettingsStorage(prefs));
+    sl.registerLazySingleton<AutoBackupTelemetryStorage>(
+      () => SharedPrefsAutoBackupTelemetryStorage(prefs),
+    );
     sl.registerLazySingleton(() => SecureKeyService(sl()));
     sl.registerLazySingleton(() => DbMigrationService());
     sl.registerLazySingleton(() => LocalDatabaseDataSource(sl(), sl()));
@@ -42,6 +47,8 @@ class ServiceLocator {
 
     sl.registerLazySingleton(
       () => GoogleSignIn(
+        clientId: GoogleAuthConfig.clientIdOrNull,
+        serverClientId: GoogleAuthConfig.serverClientIdOrNull,
         scopes: const [
           'email',
           'https://www.googleapis.com/auth/drive.appdata',
@@ -60,6 +67,6 @@ class ServiceLocator {
     sl.registerFactory(() => TransactionCubit(sl()));
     sl.registerFactory(() => BudgetCubit(sl(), sl(), sl()));
     sl.registerFactory(() => ReportCubit());
-    sl.registerFactory(() => SettingsCubit(sl(), sl(), sl()));
+    sl.registerFactory(() => SettingsCubit(sl(), sl(), sl(), sl()));
   }
 }

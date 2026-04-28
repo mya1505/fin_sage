@@ -47,6 +47,8 @@ jobs:
       KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASS: ${{ secrets.KEY_PASS }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_SERVER_CLIENT_ID: ${{ secrets.GOOGLE_SERVER_CLIENT_ID }}
 
     steps:
       - name: Checkout
@@ -77,6 +79,10 @@ jobs:
             echo "Missing release signing secrets. Set KEYSTORE_B64, KEYSTORE_PASS, KEY_ALIAS, KEY_PASS."
             exit 1
           fi
+          if [ -z "$GOOGLE_CLIENT_ID" ] || [ -z "$GOOGLE_SERVER_CLIENT_ID" ]; then
+            echo "Missing Google auth secrets. Set GOOGLE_CLIENT_ID and GOOGLE_SERVER_CLIENT_ID."
+            exit 1
+          fi
 
       - name: Prepare keystore
         run: |
@@ -95,7 +101,10 @@ jobs:
           EOT
 
       - name: Build release APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release \
+            --dart-define=GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+            --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v7

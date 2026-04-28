@@ -54,9 +54,14 @@ class SettingsPage extends StatelessWidget {
                   break;
                 case SettingsOperation.restore:
                   message = l10n.restoreCompleted;
+                  unawaited(_refreshAfterRestore(context));
                   break;
                 case SettingsOperation.reset:
                   message = l10n.localDataResetCompleted;
+                  break;
+                case SettingsOperation.autoBackupValidation:
+                  message = l10n.autoBackupValidationScheduled;
+                  unawaited(context.read<SettingsCubit>().refreshAutoBackupTelemetry());
                   break;
                 case SettingsOperation.none:
                   break;
@@ -139,6 +144,19 @@ class SettingsPage extends StatelessWidget {
                     icon: const Icon(Icons.restore),
                     label: Text(l10n.restorePreview),
                   ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: state.backupInProgress
+                        ? null
+                        : () async {
+                            await HapticFeedback.selectionClick();
+                            await cubit.scheduleAutoBackupValidation();
+                          },
+                    icon: const Icon(Icons.schedule_send_outlined),
+                    label: Text(l10n.validateAutoBackupLabel),
+                  ),
+                  const SizedBox(height: 8),
+                  _AutoBackupStatus(state: state),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: state.backupInProgress ? null : () => _confirmResetLocalData(context),
@@ -270,5 +288,79 @@ class SettingsPage extends StatelessWidget {
     if (shouldRestore == true) {
       await context.read<SettingsCubit>().restoreByFileId(fileId);
     }
+  }
+
+  Future<void> _refreshAfterRestore(BuildContext context) async {
+    if (!context.mounted) {
+      return;
+    }
+    await context.read<TransactionCubit>().loadTransactions();
+    if (!context.mounted) {
+      return;
+    }
+    await context.read<BudgetCubit>().loadBudgets();
+    if (!context.mounted) {
+      return;
+    }
+    await context.read<DashboardCubit>().loadOverview();
+  }
+}
+
+class _AutoBackupStatus extends StatelessWidget {
+  const _AutoBackupStatus({required this.state});
+
+  final SettingsState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
+    final attempt = state.autoBackupLastAttemptAt == null
+        ? l10n.autoBackupNeverRun
+        : l10n.autoBackupLastAttempt(
+            DateFormat.yMd(localeTag).add_Hm().format(state.autoBackupLastAttemptAt!.toLocal()),
+          );
+    final success = state.autoBackupLastSuccessAt == null
+        ? l10n.autoBackupNoSuccessYet
+        : l10n.autoBackupLastSuccess(
+            DateFormat.yMd(localeTag).add_Hm().format(state.autoBackupLastSuccessAt!.toLocal()),
+          );
+    final error = state.autoBackupLastError;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.autoBackupStatusTitle,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => context.read<SettingsCubit>().refreshAutoBackupTelemetry(),
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(attempt),
+            const SizedBox(height: 4),
+            Text(success),
+            if (error != null && error.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                l10n.autoBackupLastError(error),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

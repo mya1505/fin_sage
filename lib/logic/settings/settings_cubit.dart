@@ -1,14 +1,16 @@
+import 'package:fin_sage/data/datasources/local/auto_backup_telemetry_storage.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
+import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 const Object _keepError = Object();
 
-enum SettingsOperation { none, backup, preview, restore, reset }
+enum SettingsOperation { none, backup, preview, restore, reset, autoBackupValidation }
 
 class SettingsState extends Equatable {
   const SettingsState({
@@ -18,6 +20,9 @@ class SettingsState extends Equatable {
     this.lastBackupAt,
     this.backupInProgress = false,
     this.restorePreview = const [],
+    this.autoBackupLastAttemptAt,
+    this.autoBackupLastSuccessAt,
+    this.autoBackupLastError,
     this.lastCompletedOperation = SettingsOperation.none,
     this.error,
   });
@@ -28,6 +33,9 @@ class SettingsState extends Equatable {
   final DateTime? lastBackupAt;
   final bool backupInProgress;
   final List<BackupFileModel> restorePreview;
+  final DateTime? autoBackupLastAttemptAt;
+  final DateTime? autoBackupLastSuccessAt;
+  final String? autoBackupLastError;
   final SettingsOperation lastCompletedOperation;
   final String? error;
 
@@ -39,6 +47,9 @@ class SettingsState extends Equatable {
     DateTime? lastBackupAt,
     bool? backupInProgress,
     List<BackupFileModel>? restorePreview,
+    DateTime? autoBackupLastAttemptAt,
+    DateTime? autoBackupLastSuccessAt,
+    Object? autoBackupLastError = _keepError,
     SettingsOperation? lastCompletedOperation,
     Object? error = _keepError,
   }) {
@@ -49,6 +60,11 @@ class SettingsState extends Equatable {
       lastBackupAt: lastBackupAt ?? this.lastBackupAt,
       backupInProgress: backupInProgress ?? this.backupInProgress,
       restorePreview: restorePreview ?? this.restorePreview,
+      autoBackupLastAttemptAt: autoBackupLastAttemptAt ?? this.autoBackupLastAttemptAt,
+      autoBackupLastSuccessAt: autoBackupLastSuccessAt ?? this.autoBackupLastSuccessAt,
+      autoBackupLastError: identical(autoBackupLastError, _keepError)
+          ? this.autoBackupLastError
+          : autoBackupLastError as String?,
       lastCompletedOperation: lastCompletedOperation ?? this.lastCompletedOperation,
       error: identical(error, _keepError) ? this.error : error as String?,
     );
@@ -62,18 +78,22 @@ class SettingsState extends Equatable {
         lastBackupAt,
         backupInProgress,
         restorePreview,
+        autoBackupLastAttemptAt,
+        autoBackupLastSuccessAt,
+        autoBackupLastError,
         lastCompletedOperation,
         error,
       ];
 }
 
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit(this._repo, this._settingsStorage, this._localDatabaseDataSource)
+  SettingsCubit(this._repo, this._settingsStorage, this._localDatabaseDataSource, this._telemetryStorage)
       : super(const SettingsState());
 
   final BackupRepository _repo;
   final SettingsStorage _settingsStorage;
   final LocalDatabaseDataSource _localDatabaseDataSource;
+  final AutoBackupTelemetryStorage _telemetryStorage;
 
   Future<void> loadSettings() async {
     try {
@@ -81,12 +101,16 @@ class SettingsCubit extends Cubit<SettingsState> {
       final locale = await _settingsStorage.loadLocale();
       final notificationsEnabled = await _settingsStorage.loadNotificationsEnabled();
       final lastBackupAt = await _settingsStorage.loadLastBackupAt();
+      final telemetry = await _telemetryStorage.loadTelemetry();
       emit(
         state.copyWith(
           themeMode: mode,
           locale: locale,
           notificationsEnabled: notificationsEnabled,
           lastBackupAt: lastBackupAt,
+          autoBackupLastAttemptAt: telemetry.lastAttemptAt,
+          autoBackupLastSuccessAt: telemetry.lastSuccessAt,
+          autoBackupLastError: telemetry.lastError,
           lastCompletedOperation: SettingsOperation.none,
           error: null,
         ),
@@ -154,6 +178,50 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
     } catch (e) {
       emit(state.copyWith(backupInProgress: false, error: e.toString()));
+    }
+  }
+
+  Future<void> scheduleAutoBackupValidation() async {
+    if (state.backupInProgress) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        backupInProgress: true,
+        lastCompletedOperation: SettingsOperation.none,
+        error: null,
+      ),
+    );
+    try {
+      await BackupScheduler.scheduleValidationNow();
+      final telemetry = await _telemetryStorage.loadTelemetry();
+      emit(
+        state.copyWith(
+          backupInProgress: false,
+          autoBackupLastAttemptAt: telemetry.lastAttemptAt,
+          autoBackupLastSuccessAt: telemetry.lastSuccessAt,
+          autoBackupLastError: telemetry.lastError,
+          lastCompletedOperation: SettingsOperation.autoBackupValidation,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+    }
+  }
+
+  Future<void> refreshAutoBackupTelemetry() async {
+    try {
+      final telemetry = await _telemetryStorage.loadTelemetry();
+      emit(
+        state.copyWith(
+          autoBackupLastAttemptAt: telemetry.lastAttemptAt,
+          autoBackupLastSuccessAt: telemetry.lastSuccessAt,
+          autoBackupLastError: telemetry.lastError,
+          error: null,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
     }
   }
 

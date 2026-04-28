@@ -1,4 +1,5 @@
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
+import 'package:fin_sage/core/constants/google_auth_config.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/core/widgets/haptic_button.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
@@ -40,6 +41,14 @@ class AuthPage extends StatelessWidget {
                         label: l10n.signInGoogle,
                         icon: Icons.login,
                         onPressed: () => context.read<AuthCubit>().signIn(),
+                      ),
+                    ],
+                    if (!GoogleAuthConfig.hasServerClientId) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.googleSignInConfigMissing,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
                       ),
                     ],
                     if (state.status == AuthStatus.error && state.errorMessage != null) ...[

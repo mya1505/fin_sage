@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fin_sage/data/datasources/local/auto_backup_telemetry_storage.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
@@ -11,11 +12,13 @@ import 'package:mocktail/mocktail.dart';
 class MockBackupRepository extends Mock implements BackupRepository {}
 class MockSettingsStorage extends Mock implements SettingsStorage {}
 class MockLocalDatabaseDataSource extends Mock implements LocalDatabaseDataSource {}
+class MockAutoBackupTelemetryStorage extends Mock implements AutoBackupTelemetryStorage {}
 
 void main() {
   late MockBackupRepository repo;
   late MockSettingsStorage storage;
   late MockLocalDatabaseDataSource localDb;
+  late MockAutoBackupTelemetryStorage telemetryStorage;
   late SettingsCubit cubit;
 
   setUpAll(() {
@@ -26,12 +29,14 @@ void main() {
     repo = MockBackupRepository();
     storage = MockSettingsStorage();
     localDb = MockLocalDatabaseDataSource();
-    cubit = SettingsCubit(repo, storage, localDb);
+    telemetryStorage = MockAutoBackupTelemetryStorage();
+    cubit = SettingsCubit(repo, storage, localDb, telemetryStorage);
 
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
     when(() => storage.loadLocale()).thenAnswer((_) async => null);
     when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => true);
     when(() => storage.loadLastBackupAt()).thenAnswer((_) async => null);
+    when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
   });
 
   tearDown(() async {
