@@ -131,6 +131,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> backupNow() async {
+    if (state.backupInProgress) {
+      return;
+    }
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -155,6 +158,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> loadRestorePreview() async {
+    if (state.backupInProgress) {
+      return;
+    }
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -177,6 +183,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> restoreByFileId(String fileId) async {
+    if (state.backupInProgress) {
+      return;
+    }
     emit(
       state.copyWith(
         backupInProgress: true,
@@ -198,6 +207,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> resetLocalData() async {
+    if (state.backupInProgress) {
+      return;
+    }
     emit(
       state.copyWith(
         backupInProgress: true,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
@@ -46,6 +48,21 @@ void main() {
     expect(cubit.state.lastBackupAt, isNotNull);
     verify(() => repo.backupNow()).called(1);
     verify(() => storage.saveLastBackupAt(any())).called(1);
+  });
+
+  test('backupNow should ignore concurrent request while running', () async {
+    final completer = Completer<void>();
+    when(() => repo.backupNow()).thenAnswer((_) => completer.future);
+    when(() => storage.saveLastBackupAt(any())).thenAnswer((_) async {});
+
+    unawaited(cubit.backupNow());
+    await Future<void>.delayed(Duration.zero);
+    await cubit.backupNow();
+
+    verify(() => repo.backupNow()).called(1);
+
+    completer.complete();
+    await Future<void>.delayed(Duration.zero);
   });
 
   test('loadSettings should apply saved theme, locale, and notification setting', () async {

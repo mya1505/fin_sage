@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
@@ -61,7 +63,7 @@ class SettingsPage extends StatelessWidget {
               }
 
               if (message != null) {
-                HapticFeedback.lightImpact();
+                unawaited(HapticFeedback.lightImpact());
                 messenger.showSnackBar(SnackBar(content: Text(message)));
               }
             },
