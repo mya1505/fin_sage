@@ -51,6 +51,7 @@ jobs:
     needs: tests
     outputs:
       release_version: ${{ steps.meta.outputs.release_version }}
+      app_version: ${{ steps.meta.outputs.app_version }}
       apk_name: ${{ steps.meta.outputs.apk_name }}
       apk_sha_name: ${{ steps.meta.outputs.apk_sha_name }}
     env:
@@ -87,14 +88,16 @@ jobs:
       - name: Resolve release metadata
         id: meta
         run: |
-          version="$(sed -n 's/^version: \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' pubspec.yaml | head -n1)"
-          if [ -z "$version" ]; then
+          release_version="$(sed -n 's/^version: \([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p' pubspec.yaml | head -n1)"
+          app_version="$(sed -n 's/^version: \([^[:space:]]\+\).*/\1/p' pubspec.yaml | head -n1)"
+          if [ -z "$release_version" ] || [ -z "$app_version" ]; then
             echo "Cannot parse semantic version from pubspec.yaml"
             exit 1
           fi
-          echo "release_version=$version" >> "$GITHUB_OUTPUT"
-          echo "apk_name=finsage-v${version}-release.apk" >> "$GITHUB_OUTPUT"
-          echo "apk_sha_name=finsage-v${version}-release.apk.sha256" >> "$GITHUB_OUTPUT"
+          echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
+          echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
+          echo "apk_name=finsage-v${release_version}-release.apk" >> "$GITHUB_OUTPUT"
+          echo "apk_sha_name=finsage-v${release_version}-release.apk.sha256" >> "$GITHUB_OUTPUT"
 
       - name: Release preflight checks
         run: |
@@ -157,7 +160,7 @@ jobs:
       - name: Build release APK
         run: |
           flutter build apk --release \
-            --dart-define=APP_VERSION="${{ steps.meta.outputs.release_version }}" \
+            --dart-define=APP_VERSION="${{ steps.meta.outputs.app_version }}" \
             --dart-define=GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
             --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID"
 
@@ -207,6 +210,7 @@ jobs:
           checksum_value="$(cut -d ' ' -f1 "$checksum_file")"
           cat <<EOF > /tmp/release_body.md
           FinSage release v${{ needs.android_build.outputs.release_version }}
+          App version: \`${{ needs.android_build.outputs.app_version }}\`
 
           APK file: \`${{ needs.android_build.outputs.apk_name }}\`
           SHA256: \`$checksum_value\`

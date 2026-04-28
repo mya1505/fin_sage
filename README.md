@@ -68,6 +68,7 @@ Lihat folder `lib/` untuk pembagian:
    - `testing.yml`: jalan saat `push` ke `main` (security guardrail, format check, static analysis, unit/widget/integration tests, concurrency cancel run lama)
    - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, inject `APP_VERSION` via `dart-define`, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release, cleanup material signing setelah build)
    - Artefak release bernama `finsage-vX.Y.Z-release.apk` + file checksum `finsage-vX.Y.Z-release.apk.sha256`.
+7. Operasional rilis/rollback: lihat [docs/production_runbook.md](docs/production_runbook.md)
 
 ## Screenshots (Placeholder)
 
