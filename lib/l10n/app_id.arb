@@ -37,6 +37,8 @@
   "limitLabel": "Batas",
   "exportPdf": "Ekspor PDF",
   "exportCsv": "Ekspor CSV",
+  "noDataToExport": "Tidak ada data untuk diekspor",
+  "csvSaved": "CSV tersimpan: {path}",
   "darkMode": "Mode Gelap",
   "languageLabel": "Bahasa",
   "systemDefault": "Ikuti Sistem",

@@ -57,6 +57,8 @@ class AppLocalizations {
       'limitLabel': 'Limit',
       'exportPdf': 'Export PDF',
       'exportCsv': 'Export CSV',
+      'noDataToExport': 'No data to export',
+      'csvSaved': 'CSV saved: {path}',
       'darkMode': 'Dark Mode',
       'languageLabel': 'Language',
       'systemDefault': 'System Default',
@@ -124,6 +126,8 @@ class AppLocalizations {
       'limitLabel': 'Batas',
       'exportPdf': 'Ekspor PDF',
       'exportCsv': 'Ekspor CSV',
+      'noDataToExport': 'Tidak ada data untuk diekspor',
+      'csvSaved': 'CSV tersimpan: {path}',
       'darkMode': 'Mode Gelap',
       'languageLabel': 'Bahasa',
       'systemDefault': 'Ikuti Sistem',
@@ -194,6 +198,8 @@ class AppLocalizations {
   String get limitLabel => _t('limitLabel');
   String get exportPdf => _t('exportPdf');
   String get exportCsv => _t('exportCsv');
+  String get noDataToExport => _t('noDataToExport');
+  String csvSaved(String path) => _t('csvSaved').replaceAll('{path}', path);
   String get darkMode => _t('darkMode');
   String get languageLabel => _t('languageLabel');
   String get systemDefault => _t('systemDefault');

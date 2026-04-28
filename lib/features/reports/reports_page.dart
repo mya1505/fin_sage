@@ -32,6 +32,9 @@ class ReportsPage extends StatelessWidget {
                           : () {
                               context.read<ReportCubit>().run(() async {
                                 final txs = context.read<TransactionCubit>().state.items;
+                                if (txs.isEmpty) {
+                                  throw StateError(l10n.noDataToExport);
+                                }
                                 final pdf = await generator.generatePdf(txs);
                                 await Printing.layoutPdf(onLayout: (_) async => pdf);
                               });
@@ -46,7 +49,15 @@ class ReportsPage extends StatelessWidget {
                           : () {
                               context.read<ReportCubit>().run(() async {
                                 final txs = context.read<TransactionCubit>().state.items;
-                                await generator.generateCsv(txs);
+                                if (txs.isEmpty) {
+                                  throw StateError(l10n.noDataToExport);
+                                }
+                                final file = await generator.exportCsvFile(txs);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.csvSaved(file.path))),
+                                  );
+                                }
                               });
                             },
                       icon: const Icon(Icons.table_chart),

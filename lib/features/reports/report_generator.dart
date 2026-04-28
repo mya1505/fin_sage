@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:csv/csv.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -14,6 +16,15 @@ class ReportGenerator {
       ),
     ];
     return const ListToCsvConverter().convert(rows);
+  }
+
+  Future<File> exportCsvFile(List<TransactionModel> items) async {
+    final csv = await generateCsv(items);
+    final directory = await getTemporaryDirectory();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final file = File('${directory.path}/finsage-report-$timestamp.csv');
+    await file.writeAsString(csv, flush: true);
+    return file;
   }
 
   Future<Uint8List> generatePdf(List<TransactionModel> items) async {

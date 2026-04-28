@@ -37,6 +37,8 @@
   "limitLabel": "Limit",
   "exportPdf": "Export PDF",
   "exportCsv": "Export CSV",
+  "noDataToExport": "No data to export",
+  "csvSaved": "CSV saved: {path}",
   "darkMode": "Dark Mode",
   "languageLabel": "Language",
   "systemDefault": "System Default",
