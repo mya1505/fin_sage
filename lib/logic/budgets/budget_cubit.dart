@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
+import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BudgetState extends Equatable {
@@ -23,22 +24,41 @@ class BudgetState extends Equatable {
 }
 
 class BudgetCubit extends Cubit<BudgetState> {
-  BudgetCubit(this._repo) : super(const BudgetState());
+  BudgetCubit(this._repo, this._notificationService) : super(const BudgetState());
 
   final BudgetRepository _repo;
+  final BudgetNotificationService _notificationService;
+  final Set<int> _notifiedBudgetIds = <int>{};
 
   Future<void> loadBudgets() async {
     emit(state.copyWith(loading: true, error: null));
     try {
       final items = await _repo.fetchBudgets();
       emit(state.copyWith(loading: false, items: items));
+      await _notifyExceededBudgets(items);
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));
     }
   }
 
   Future<void> saveBudget(BudgetModel model) async {
-    await _repo.saveBudget(model);
-    await loadBudgets();
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.saveBudget(model);
+      await loadBudgets();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> _notifyExceededBudgets(List<BudgetModel> items) async {
+    for (final budget in items) {
+      final id = budget.id;
+      if (id == null || budget.usageRatio < 1 || _notifiedBudgetIds.contains(id)) {
+        continue;
+      }
+      await _notificationService.notifyBudgetExceeded(budgetId: id);
+      _notifiedBudgetIds.add(id);
+    }
   }
 }

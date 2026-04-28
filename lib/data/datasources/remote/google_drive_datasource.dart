@@ -3,12 +3,14 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
 
 class GoogleDriveDataSource {
-  GoogleDriveDataSource(this._googleSignIn);
+  GoogleDriveDataSource(this._googleSignIn, {this.allowInteractiveSignIn = true});
 
   final GoogleSignIn _googleSignIn;
+  final bool allowInteractiveSignIn;
 
   Future<drive.DriveApi> _driveApi() async {
-    final account = await _googleSignIn.signInSilently() ?? await _googleSignIn.signIn();
+    final silentAccount = await _googleSignIn.signInSilently();
+    final account = silentAccount ?? (allowInteractiveSignIn ? await _googleSignIn.signIn() : null);
     final headers = await account?.authHeaders;
     if (headers == null) {
       throw StateError('Google auth headers unavailable');

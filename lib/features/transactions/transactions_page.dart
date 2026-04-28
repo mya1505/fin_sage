@@ -41,7 +41,19 @@ class _TransactionsPageState extends State<TransactionsPage> {
           icon: const Icon(Icons.add),
         ),
         body: SafeArea(
-          child: BlocBuilder<TransactionCubit, TransactionState>(
+          child: BlocConsumer<TransactionCubit, TransactionState>(
+            listenWhen: (previous, current) => previous.error != current.error,
+            listener: (context, state) {
+              if (state.error == null) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error!),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            },
             builder: (context, state) {
               if (state.loading) {
                 return ListView.separated(
@@ -402,7 +414,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         return category.name;
       }
     }
-    return 'General';
+    return '#$id';
   }
 }
 

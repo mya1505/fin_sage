@@ -12,6 +12,7 @@ import 'package:fin_sage/data/repositories/impl/backup_repository_impl.dart';
 import 'package:fin_sage/data/repositories/impl/budget_repository_impl.dart';
 import 'package:fin_sage/data/repositories/impl/transaction_repository_impl.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
+import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
 import 'package:fin_sage/logic/budgets/budget_cubit.dart';
 import 'package:fin_sage/logic/dashboard/dashboard_cubit.dart';
@@ -19,6 +20,7 @@ import 'package:fin_sage/logic/reports/report_cubit.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,6 +37,8 @@ class ServiceLocator {
     sl.registerLazySingleton(() => DbMigrationService());
     sl.registerLazySingleton(() => LocalDatabaseDataSource(sl(), sl()));
     sl.registerLazySingleton(() => DriftQueryService());
+    sl.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
+    sl.registerLazySingleton(() => BudgetNotificationService(sl()));
 
     sl.registerLazySingleton(
       () => GoogleSignIn(
@@ -54,7 +58,7 @@ class ServiceLocator {
     sl.registerFactory(() => AuthCubit(sl()));
     sl.registerFactory(() => DashboardCubit(sl()));
     sl.registerFactory(() => TransactionCubit(sl()));
-    sl.registerFactory(() => BudgetCubit(sl()));
+    sl.registerFactory(() => BudgetCubit(sl(), sl()));
     sl.registerFactory(() => ReportCubit());
     sl.registerFactory(() => SettingsCubit(sl(), sl()));
   }

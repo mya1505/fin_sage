@@ -7,6 +7,7 @@ import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/app_theme.dart';
 import 'package:fin_sage/core/di/service_locator.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
@@ -20,6 +21,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocator.init();
+  await sl<BudgetNotificationService>().initialize();
   await BackupScheduler.initialize();
   await BackupScheduler.scheduleEvery24Hours();
 

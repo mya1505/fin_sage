@@ -60,12 +60,22 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   Future<void> createTransaction(TransactionModel model) async {
-    await _repo.saveTransaction(model);
-    await loadTransactions();
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.saveTransaction(model);
+      await loadTransactions();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   Future<void> removeTransaction(int id) async {
-    await _repo.deleteTransaction(id);
-    await loadTransactions();
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.deleteTransaction(id);
+      await loadTransactions();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 }
