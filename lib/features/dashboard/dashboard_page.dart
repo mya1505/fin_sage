@@ -15,6 +15,7 @@ import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -154,7 +155,7 @@ class _RecentTransactionTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(isIncome ? Icons.south_west : Icons.north_east, color: amountColor),
         title: Text(tx.title),
-        subtitle: Text('${tx.date.toIso8601String().split('T').first} • ${isIncome ? incomeLabel : expenseLabel}'),
+        subtitle: Text('${DateFormat.yMMMd(locale).format(tx.date)} • ${isIncome ? incomeLabel : expenseLabel}'),
         trailing: Text(
           '${isIncome ? '+' : '-'}${tx.amount.toCurrency(locale)}',
           style: TextStyle(fontWeight: FontWeight.w700, color: amountColor),

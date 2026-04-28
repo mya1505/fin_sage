@@ -8,6 +8,7 @@ import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 enum _TransactionFilter { all, income, expense }
 
@@ -171,7 +172,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           title: Text(tx.title),
                           subtitle: Text(
-                            '${tx.date.toIso8601String().split('T').first} • $categoryName • ${isIncome ? l10n.incomeType : l10n.expenseType}',
+                            '${DateFormat.yMMMd(locale).format(tx.date)} • $categoryName • ${isIncome ? l10n.incomeType : l10n.expenseType}',
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -252,6 +253,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   Future<void> _showTransactionForm(BuildContext context, {TransactionModel? existing}) async {
     final l10n = AppLocalizations.of(context)!;
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
     final formKey = GlobalKey<FormState>();
     final titleCtrl = TextEditingController(text: existing?.title ?? '');
     final amountCtrl = TextEditingController(text: existing == null ? '' : existing.amount.toStringAsFixed(0));
@@ -356,7 +358,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     const SizedBox(height: 12),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: Text(selectedDate.toIso8601String().split('T').first),
+                      title: Text(DateFormat.yMMMd(localeTag).format(selectedDate)),
                       subtitle: Text(l10n.dateLabel),
                       trailing: const Icon(Icons.calendar_today_outlined),
                       onTap: () async {
