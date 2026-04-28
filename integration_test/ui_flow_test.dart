@@ -9,12 +9,14 @@ import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
+import 'package:fin_sage/features/reports/reports_page.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:fin_sage/features/settings/settings_page.dart';
 import 'package:fin_sage/features/transactions/transactions_page.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/budgets/budget_cubit.dart';
 import 'package:fin_sage/logic/dashboard/dashboard_cubit.dart';
+import 'package:fin_sage/logic/reports/report_cubit.dart';
 import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
@@ -278,5 +280,109 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Backup file is invalid or corrupted'), findsOneWidget);
+  });
+
+  testWidgets('settings backup should show localized google auth unavailable error', (tester) async {
+    final txRepo = MockTransactionRepository();
+    final budgetRepo = MockBudgetRepository();
+    final backupRepo = MockBackupRepository();
+    final settingsStorage = MockSettingsStorage();
+    final localDb = MockLocalDatabaseDataSource();
+    final notificationService = MockBudgetNotificationService();
+    final telemetryStorage = MockAutoBackupTelemetryStorage();
+    final validationScheduler = MockAutoBackupValidationScheduler();
+
+    final txCubit = TransactionCubit(txRepo);
+    final budgetCubit = BudgetCubit(budgetRepo, notificationService, settingsStorage);
+    final dashboardCubit = DashboardCubit(txRepo);
+    final settingsCubit =
+        SettingsCubit(backupRepo, settingsStorage, localDb, telemetryStorage, validationScheduler);
+
+    addTearDown(txCubit.close);
+    addTearDown(budgetCubit.close);
+    addTearDown(dashboardCubit.close);
+    addTearDown(settingsCubit.close);
+
+    when(() => txRepo.fetchCategories()).thenAnswer(
+      (_) async => const [CategoryModel(id: 1, name: 'General', colorHex: '#0D3B66', icon: 'wallet')],
+    );
+    when(() => txRepo.fetchTransactions()).thenAnswer((_) async => []);
+    when(() => txRepo.monthlySummary()).thenAnswer((_) async => {'income': 0, 'expense': 0});
+    when(() => budgetRepo.fetchBudgets()).thenAnswer((_) async => []);
+    when(() => settingsStorage.loadNotificationsEnabled()).thenAnswer((_) async => true);
+    when(() => settingsStorage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
+    when(() => settingsStorage.loadLocale()).thenAnswer((_) async => null);
+    when(() => settingsStorage.loadLastBackupAt()).thenAnswer((_) async => null);
+    when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
+    when(() => backupRepo.backupNow()).thenThrow(
+      const AppException('Google auth headers unavailable', code: 'google_auth_headers_unavailable'),
+    );
+
+    await settingsCubit.loadSettings();
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<TransactionCubit>.value(value: txCubit),
+          BlocProvider<BudgetCubit>.value(value: budgetCubit),
+          BlocProvider<DashboardCubit>.value(value: dashboardCubit),
+          BlocProvider<SettingsCubit>.value(value: settingsCubit),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SettingsPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Backup Now'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Google authentication is unavailable. Please sign in again and retry.'), findsOneWidget);
+  });
+
+  testWidgets('reports page should show localized no-data export error', (tester) async {
+    final txRepo = MockTransactionRepository();
+    final txCubit = TransactionCubit(txRepo);
+    final reportCubit = ReportCubit();
+    addTearDown(txCubit.close);
+    addTearDown(reportCubit.close);
+
+    when(() => txRepo.fetchTransactions()).thenAnswer((_) async => []);
+    when(() => txRepo.fetchCategories()).thenAnswer((_) async => const []);
+    await txCubit.loadTransactions();
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<TransactionCubit>.value(value: txCubit),
+          BlocProvider<ReportCubit>.value(value: reportCubit),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ReportsPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Export PDF'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No data to export'), findsOneWidget);
   });
 }
