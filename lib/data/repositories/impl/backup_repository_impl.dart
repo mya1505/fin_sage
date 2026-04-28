@@ -1,3 +1,4 @@
+import 'package:crypto/crypto.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
@@ -17,7 +18,14 @@ class BackupRepositoryImpl implements BackupRepository {
   Future<void> backupNow() async {
     final bytes = await _local.databaseBytes();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now().toUtc());
-    await _remote.uploadBackup(bytes, 'finsage-backup-$timestamp.db');
+    final backupFilename = 'finsage-backup-$timestamp.db';
+    await _remote.uploadBackup(bytes, backupFilename);
+    final checksum = _sha256Hex(bytes);
+    try {
+      await _remote.uploadBackupChecksum('$backupFilename.sha256', checksum);
+    } catch (_) {
+      // Keep backup successful even when sidecar checksum upload fails.
+    }
     await _cleanupOldBackupsBestEffort();
   }
 
@@ -25,7 +33,7 @@ class BackupRepositoryImpl implements BackupRepository {
   Future<List<BackupFileModel>> restorePreview() async {
     final files = await _remote.listBackups();
     final mapped = files
-        .where((e) => e.id != null && e.id!.isNotEmpty)
+        .where((e) => e.id != null && e.id!.isNotEmpty && _isDatabaseBackupName(e.name))
         .map(
           (e) => BackupFileModel(
             id: e.id!,
@@ -59,10 +67,37 @@ class BackupRepositoryImpl implements BackupRepository {
     return 0;
   }
 
+  bool _isDatabaseBackupName(String? name) {
+    if (name == null || name.isEmpty) {
+      return false;
+    }
+    return name.startsWith('finsage-backup-') && name.endsWith('.db');
+  }
+
+  String _sha256Hex(List<int> bytes) {
+    return sha256.convert(bytes).toString();
+  }
+
+  Future<String?> _expectedChecksumForFileId(String fileId) async {
+    try {
+      final metadata = await _remote.getBackupMetadata(fileId);
+      final backupName = metadata.name;
+      if (!_isDatabaseBackupName(backupName)) {
+        return null;
+      }
+      final checksumFilename = '$backupName.sha256';
+      return _remote.downloadBackupChecksumByName(checksumFilename);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _cleanupOldBackupsBestEffort() async {
     try {
       final files = await _remote.listBackups();
-      final candidates = files.where((file) => file.id != null && file.id!.isNotEmpty).toList();
+      final candidates = files
+          .where((file) => file.id != null && file.id!.isNotEmpty && _isDatabaseBackupName(file.name))
+          .toList();
       candidates.sort((a, b) {
         final aTime = a.createdTime ?? DateTime.fromMillisecondsSinceEpoch(0);
         final bTime = b.createdTime ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -93,6 +128,16 @@ class BackupRepositoryImpl implements BackupRepository {
         'Backup file invalid or corrupted',
         code: 'backup_invalid_file',
       );
+    }
+    final expectedChecksum = await _expectedChecksumForFileId(fileId);
+    if (expectedChecksum != null && expectedChecksum.isNotEmpty) {
+      final actualChecksum = _sha256Hex(bytes);
+      if (actualChecksum.toLowerCase() != expectedChecksum.toLowerCase()) {
+        throw const AppException(
+          'Backup checksum mismatch',
+          code: 'backup_checksum_mismatch',
+        );
+      }
     }
     await _local.replaceDatabaseFile(bytes);
   }

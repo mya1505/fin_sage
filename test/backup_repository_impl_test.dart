@@ -1,3 +1,4 @@
+import 'package:crypto/crypto.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
 import 'package:fin_sage/data/repositories/impl/backup_repository_impl.dart';
@@ -22,24 +23,29 @@ void main() {
   });
 
   test('backupNow uploads database bytes with normalized filename', () async {
-    when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
-    when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+    final bytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => local.databaseBytes()).thenAnswer((_) async => bytes);
+    when(() => remote.uploadBackup(bytes, any())).thenAnswer((_) async {});
+    when(() => remote.uploadBackupChecksum(any(), any())).thenAnswer((_) async {});
     when(() => remote.listBackups()).thenAnswer((_) async => []);
 
     await repository.backupNow();
 
-    final captured = verify(() => remote.uploadBackup([1, 2, 3], captureAny())).captured.single as String;
+    final captured = verify(() => remote.uploadBackup(bytes, captureAny())).captured.single as String;
     expect(captured, matches(RegExp(r'^finsage-backup-\d{8}_\d{6}\.db$')));
+    verify(() => remote.uploadBackupChecksum('$captured.sha256', sha256.convert(bytes).toString())).called(1);
   });
 
   test('backupNow removes old backups beyond retention limit', () async {
-    when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
-    when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+    final bytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => local.databaseBytes()).thenAnswer((_) async => bytes);
+    when(() => remote.uploadBackup(bytes, any())).thenAnswer((_) async {});
+    when(() => remote.uploadBackupChecksum(any(), any())).thenAnswer((_) async {});
 
     final files = List<drive.File>.generate(32, (index) {
       return drive.File()
         ..id = 'file-$index'
-        ..name = 'finsage-backup-$index.db'
+        ..name = 'finsage-backup-20260401_${(100000 + index).toString()}.db'
         ..createdTime = DateTime(2026, 4, 1).add(Duration(minutes: index));
     });
     when(() => remote.listBackups()).thenAnswer((_) async => files);
@@ -52,13 +58,15 @@ void main() {
   });
 
   test('backupNow should still succeed when cleanup listing fails', () async {
-    when(() => local.databaseBytes()).thenAnswer((_) async => [1, 2, 3]);
-    when(() => remote.uploadBackup([1, 2, 3], any())).thenAnswer((_) async {});
+    final bytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => local.databaseBytes()).thenAnswer((_) async => bytes);
+    when(() => remote.uploadBackup(bytes, any())).thenAnswer((_) async {});
+    when(() => remote.uploadBackupChecksum(any(), any())).thenAnswer((_) async {});
     when(() => remote.listBackups()).thenThrow(Exception('drive unavailable'));
 
     await repository.backupNow();
 
-    verify(() => remote.uploadBackup([1, 2, 3], any())).called(1);
+    verify(() => remote.uploadBackup(bytes, any())).called(1);
   });
 
   test('restorePreview filters invalid ids and sorts by newest createdAt', () async {
@@ -86,6 +94,13 @@ void main() {
   test('restoreFromFile downloads bytes and replaces local database file', () async {
     final validBytes = List<int>.generate(1024, (i) => i % 255);
     when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => validBytes);
+    when(() => remote.getBackupMetadata('file-1')).thenAnswer(
+      (_) async => drive.File()
+        ..id = 'file-1'
+        ..name = 'finsage-backup-20260401_120000.db',
+    );
+    when(() => remote.downloadBackupChecksumByName('finsage-backup-20260401_120000.db.sha256'))
+        .thenAnswer((_) async => sha256.convert(validBytes).toString());
     when(() => local.replaceDatabaseFile(validBytes)).thenAnswer((_) async {});
 
     await repository.restoreFromFile('file-1');
@@ -101,6 +116,26 @@ void main() {
       () => repository.restoreFromFile('file-1'),
       throwsA(
         isA<AppException>().having((e) => e.code, 'code', 'backup_invalid_file'),
+      ),
+    );
+    verifyNever(() => local.replaceDatabaseFile(any()));
+  });
+
+  test('restoreFromFile throws when checksum does not match', () async {
+    final validBytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => validBytes);
+    when(() => remote.getBackupMetadata('file-1')).thenAnswer(
+      (_) async => drive.File()
+        ..id = 'file-1'
+        ..name = 'finsage-backup-20260401_120000.db',
+    );
+    when(() => remote.downloadBackupChecksumByName('finsage-backup-20260401_120000.db.sha256'))
+        .thenAnswer((_) async => '0000');
+
+    expect(
+      () => repository.restoreFromFile('file-1'),
+      throwsA(
+        isA<AppException>().having((e) => e.code, 'code', 'backup_checksum_mismatch'),
       ),
     );
     verifyNever(() => local.replaceDatabaseFile(any()));

@@ -312,6 +312,9 @@ class SettingsPage extends StatelessWidget {
     if (lower.contains('backup file invalid or corrupted')) {
       return l10n.backupInvalidFile;
     }
+    if (lower.contains('backup checksum mismatch')) {
+      return l10n.backupChecksumMismatch;
+    }
     return rawMessage;
   }
 }
