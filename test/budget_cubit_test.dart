@@ -82,6 +82,7 @@ void main() {
       ),
     ),
     expect: () => [
+      const BudgetState(loading: false, items: [], error: null),
       isA<BudgetState>().having((s) => s.error, 'error', contains('save failed')),
     ],
   );
