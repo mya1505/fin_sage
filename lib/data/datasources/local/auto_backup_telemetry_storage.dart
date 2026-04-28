@@ -29,6 +29,7 @@ class SharedPrefsAutoBackupTelemetryStorage implements AutoBackupTelemetryStorag
   static const String lastAttemptAtKey = 'backup.auto.last_attempt_at';
   static const String lastSuccessAtKey = 'backup.auto.last_success_at';
   static const String lastErrorKey = 'backup.auto.last_error';
+  static const int _maxErrorLength = 500;
 
   final SharedPreferences _prefs;
 
@@ -60,7 +61,11 @@ class SharedPrefsAutoBackupTelemetryStorage implements AutoBackupTelemetryStorag
   @override
   Future<void> markFailure(DateTime timestamp, String error) async {
     await _prefs.setString(lastAttemptAtKey, timestamp.toIso8601String());
-    await _prefs.setString(lastErrorKey, error);
+    final normalized = error.trim();
+    final limited = normalized.length <= _maxErrorLength
+        ? normalized
+        : normalized.substring(0, _maxErrorLength);
+    await _prefs.setString(lastErrorKey, limited);
   }
 
   DateTime? _parseDate(String? raw) {
