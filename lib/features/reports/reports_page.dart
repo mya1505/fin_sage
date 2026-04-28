@@ -10,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 
+enum _ReportTypeFilter { all, income, expense }
+
 class ReportsPage extends StatefulWidget {
   const ReportsPage({super.key});
 
@@ -19,6 +21,7 @@ class ReportsPage extends StatefulWidget {
 
 class _ReportsPageState extends State<ReportsPage> {
   DateTime _selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  _ReportTypeFilter _typeFilter = _ReportTypeFilter.all;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class _ReportsPageState extends State<ReportsPage> {
         body: SafeArea(
           child: BlocBuilder<TransactionCubit, TransactionState>(
             builder: (context, txState) {
-              final filteredTxs = _filterByMonth(txState.items, _selectedMonth);
+              final filteredTxs = _filterTransactions(txState.items);
               final income = filteredTxs
                   .where((tx) => tx.type == TransactionType.income)
                   .fold<double>(0, (sum, tx) => sum + tx.amount);
@@ -56,6 +59,28 @@ class _ReportsPageState extends State<ReportsPage> {
                               DateFormat.yMMMM(localeTag).format(_selectedMonth),
                             ),
                           ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _ReportFilterChip(
+                              label: l10n.allType,
+                              selected: _typeFilter == _ReportTypeFilter.all,
+                              onTap: () => setState(() => _typeFilter = _ReportTypeFilter.all),
+                            ),
+                            _ReportFilterChip(
+                              label: l10n.incomeType,
+                              selected: _typeFilter == _ReportTypeFilter.income,
+                              onTap: () => setState(() => _typeFilter = _ReportTypeFilter.income),
+                            ),
+                            _ReportFilterChip(
+                              label: l10n.expenseType,
+                              selected: _typeFilter == _ReportTypeFilter.expense,
+                              onTap: () => setState(() => _typeFilter = _ReportTypeFilter.expense),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         Card(
@@ -139,9 +164,16 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  List<TransactionModel> _filterByMonth(List<TransactionModel> items, DateTime month) {
+  List<TransactionModel> _filterTransactions(List<TransactionModel> items) {
     return items
-        .where((tx) => tx.date.year == month.year && tx.date.month == month.month)
+        .where((tx) => tx.date.year == _selectedMonth.year && tx.date.month == _selectedMonth.month)
+        .where((tx) {
+          return switch (_typeFilter) {
+            _ReportTypeFilter.all => true,
+            _ReportTypeFilter.income => tx.type == TransactionType.income,
+            _ReportTypeFilter.expense => tx.type == TransactionType.expense,
+          };
+        })
         .toList(growable: false);
   }
 
@@ -157,5 +189,26 @@ class _ReportsPageState extends State<ReportsPage> {
         _selectedMonth = DateTime(date.year, date.month);
       });
     }
+  }
+}
+
+class _ReportFilterChip extends StatelessWidget {
+  const _ReportFilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onTap(),
+    );
   }
 }

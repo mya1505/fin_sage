@@ -28,6 +28,14 @@ class ReportGenerator {
   }
 
   Future<Uint8List> generatePdf(List<TransactionModel> items, {String? title}) async {
+    final income = items
+        .where((item) => item.type == TransactionType.income)
+        .fold<double>(0, (sum, item) => sum + item.amount);
+    final expense = items
+        .where((item) => item.type == TransactionType.expense)
+        .fold<double>(0, (sum, item) => sum + item.amount);
+    final balance = income - expense;
+
     final pdf = pw.Document();
     pdf.addPage(
       pw.Page(
@@ -38,10 +46,19 @@ class ReportGenerator {
             children: [
               pw.Text(title ?? 'FinSage Financial Report', style: pw.TextStyle(fontSize: 20)),
               pw.SizedBox(height: 16),
+              pw.Text('Transactions: ${items.length}'),
+              pw.Text('Income: ${income.toStringAsFixed(2)}'),
+              pw.Text('Expense: ${expense.toStringAsFixed(2)}'),
+              pw.Text('Net Balance: ${balance.toStringAsFixed(2)}'),
+              pw.SizedBox(height: 10),
+              pw.Divider(),
+              pw.SizedBox(height: 6),
               ...items.map(
                 (e) => pw.Padding(
                   padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                  child: pw.Text('${e.date.toIso8601String()} - ${e.title} - ${e.amount}'),
+                  child: pw.Text(
+                    '${e.date.toIso8601String().split('T').first} - ${e.title} - ${e.type.name} - ${e.amount.toStringAsFixed(2)}',
+                  ),
                 ),
               ),
             ],

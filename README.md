@@ -38,6 +38,7 @@ Lihat folder `lib/` untuk pembagian:
 - Anggaran sekarang mendukung hapus budget dengan konfirmasi.
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.
 - Laporan mendukung filter bulanan dengan ringkasan income/expense/balance sebelum export.
+- Laporan juga mendukung filter tipe transaksi (semua/pemasukan/pengeluaran).
 - Settings menyediakan aksi sign out dengan konfirmasi.
 - Settings mendukung toggle notifikasi budget dan reset data lokal aman.
 - Settings menampilkan riwayat waktu backup terakhir.
