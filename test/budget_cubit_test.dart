@@ -14,6 +14,18 @@ void main() {
   late MockBudgetRepository repository;
   late MockBudgetNotificationService notificationService;
 
+  setUpAll(() {
+    registerFallbackValue(
+      BudgetModel(
+        id: null,
+        categoryId: 1,
+        month: DateTime(2026, 1),
+        limitAmount: 1,
+        usedAmount: 0,
+      ),
+    );
+  });
+
   final budgets = [
     BudgetModel(
       id: 1,
