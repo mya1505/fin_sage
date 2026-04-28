@@ -32,7 +32,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return ErrorBoundary(
       child: Scaffold(
@@ -226,7 +226,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Future<void> _confirmDelete(BuildContext context, int id) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -254,7 +254,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Future<void> _showTransactionForm(BuildContext context, {TransactionModel? existing}) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final formKey = GlobalKey<FormState>();
     final titleCtrl = TextEditingController(text: existing?.title ?? '');
@@ -433,7 +433,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Future<void> _showCreateCategoryDialog(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final formKey = GlobalKey<FormState>();
     final nameCtrl = TextEditingController();
     final colorCtrl = TextEditingController(text: '#0D3B66');
@@ -563,7 +563,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Future<bool> _confirmArchiveCategory(BuildContext context, String categoryName) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {

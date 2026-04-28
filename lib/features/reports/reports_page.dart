@@ -25,7 +25,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final generator = ReportGenerator();
     final localeTag = Localizations.localeOf(context).toLanguageTag();
 

@@ -53,7 +53,7 @@ jobs:
           path: /tmp/dart_format.log
 
       - name: Static analysis
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        run: flutter analyze --no-fatal-infos
 
       - name: Run unit/widget tests
         run: flutter test

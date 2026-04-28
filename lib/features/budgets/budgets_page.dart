@@ -23,7 +23,7 @@ class BudgetsPage extends StatefulWidget {
 class _BudgetsPageState extends State<BudgetsPage> {
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toLanguageTag();
     final categoryMap = {
       for (final category in context.watch<TransactionCubit>().state.categories)
@@ -151,7 +151,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
   }
 
   Future<void> _confirmDeleteBudget(BuildContext context, int budgetId) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -179,7 +179,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
   }
 
   Future<void> _showBudgetForm(BuildContext context, {BudgetModel? existing}) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final formKey = GlobalKey<FormState>();
     final limitCtrl = TextEditingController(text: existing?.limitAmount.toStringAsFixed(0) ?? '');
     final usedCtrl = TextEditingController(text: existing?.usedAmount.toStringAsFixed(0) ?? '0');

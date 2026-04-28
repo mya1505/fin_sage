@@ -21,7 +21,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final localeTag = Localizations.localeOf(context).toLanguageTag();
 
     return ErrorBoundary(
@@ -201,7 +201,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   Future<void> _confirmResetLocalData(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -234,7 +234,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -264,7 +264,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   Future<void> _confirmRestore(BuildContext context, String fileId) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final shouldRestore = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -313,7 +313,7 @@ class _AutoBackupStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final localeTag = Localizations.localeOf(context).toLanguageTag();
     final attempt = state.autoBackupLastAttemptAt == null
         ? l10n.autoBackupNeverRun
