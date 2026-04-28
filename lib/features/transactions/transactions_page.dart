@@ -265,7 +265,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
     final categories = state.categories;
     final hasExistingCategory = existing != null && categories.any((category) => category.id == existing.categoryId);
     int selectedCategoryId = hasExistingCategory
-        ? existing!.categoryId
+        ? existing.categoryId
         : (categories.isNotEmpty ? (categories.first.id ?? 1) : (existing?.categoryId ?? 1));
 
     await showModalBottomSheet<void>(
