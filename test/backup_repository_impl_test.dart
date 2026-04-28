@@ -72,11 +72,11 @@ void main() {
   test('restorePreview filters invalid ids and sorts by newest createdAt', () async {
     final oldFile = drive.File()
       ..id = 'old'
-      ..name = 'old.db'
+      ..name = 'finsage-backup-20260102_120000.db'
       ..createdTime = DateTime(2026, 1, 2);
     final newFile = drive.File()
       ..id = 'new'
-      ..name = 'new.db'
+      ..name = 'finsage-backup-20260402_120000.db'
       ..createdTime = DateTime(2026, 4, 2);
     final invalidFile = drive.File()
       ..id = ''
