@@ -2,6 +2,7 @@ import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
+import 'package:intl/intl.dart';
 
 class BackupRepositoryImpl implements BackupRepository {
   BackupRepositoryImpl(this._local, this._remote);
@@ -12,7 +13,7 @@ class BackupRepositoryImpl implements BackupRepository {
   @override
   Future<void> backupNow() async {
     final bytes = await _local.databaseBytes();
-    final timestamp = DateTime.now().toIso8601String();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now().toUtc());
     await _remote.uploadBackup(bytes, 'finsage-backup-$timestamp.db');
   }
 
@@ -26,7 +27,7 @@ class BackupRepositoryImpl implements BackupRepository {
             id: e.id!,
             name: e.name ?? 'backup.db',
             createdAt: e.createdTime,
-            size: e.size ?? 0,
+            size: _parseSize(e.size),
           ),
         )
         .toList();
@@ -36,6 +37,22 @@ class BackupRepositoryImpl implements BackupRepository {
       return bTime.compareTo(aTime);
     });
     return mapped;
+  }
+
+  int _parseSize(Object? rawSize) {
+    if (rawSize == null) {
+      return 0;
+    }
+    if (rawSize is int) {
+      return rawSize;
+    }
+    if (rawSize is num) {
+      return rawSize.toInt();
+    }
+    if (rawSize is String) {
+      return int.tryParse(rawSize) ?? 0;
+    }
+    return 0;
   }
 
   @override
