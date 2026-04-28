@@ -15,6 +15,7 @@ class SettingsState extends Equatable {
     this.themeMode = ThemeMode.system,
     this.locale,
     this.notificationsEnabled = true,
+    this.lastBackupAt,
     this.backupInProgress = false,
     this.restorePreview = const [],
     this.lastCompletedOperation = SettingsOperation.none,
@@ -24,6 +25,7 @@ class SettingsState extends Equatable {
   final ThemeMode themeMode;
   final Locale? locale;
   final bool notificationsEnabled;
+  final DateTime? lastBackupAt;
   final bool backupInProgress;
   final List<BackupFileModel> restorePreview;
   final SettingsOperation lastCompletedOperation;
@@ -34,6 +36,7 @@ class SettingsState extends Equatable {
     Locale? locale,
     bool clearLocale = false,
     bool? notificationsEnabled,
+    DateTime? lastBackupAt,
     bool? backupInProgress,
     List<BackupFileModel>? restorePreview,
     SettingsOperation? lastCompletedOperation,
@@ -43,6 +46,7 @@ class SettingsState extends Equatable {
       themeMode: themeMode ?? this.themeMode,
       locale: clearLocale ? null : locale ?? this.locale,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      lastBackupAt: lastBackupAt ?? this.lastBackupAt,
       backupInProgress: backupInProgress ?? this.backupInProgress,
       restorePreview: restorePreview ?? this.restorePreview,
       lastCompletedOperation: lastCompletedOperation ?? this.lastCompletedOperation,
@@ -55,6 +59,7 @@ class SettingsState extends Equatable {
         themeMode,
         locale,
         notificationsEnabled,
+        lastBackupAt,
         backupInProgress,
         restorePreview,
         lastCompletedOperation,
@@ -75,11 +80,13 @@ class SettingsCubit extends Cubit<SettingsState> {
       final mode = await _settingsStorage.loadThemeMode();
       final locale = await _settingsStorage.loadLocale();
       final notificationsEnabled = await _settingsStorage.loadNotificationsEnabled();
+      final lastBackupAt = await _settingsStorage.loadLastBackupAt();
       emit(
         state.copyWith(
           themeMode: mode,
           locale: locale,
           notificationsEnabled: notificationsEnabled,
+          lastBackupAt: lastBackupAt,
           lastCompletedOperation: SettingsOperation.none,
           error: null,
         ),
@@ -133,9 +140,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
     try {
       await _repo.backupNow();
+      final now = DateTime.now();
+      await _settingsStorage.saveLastBackupAt(now);
       emit(
         state.copyWith(
           backupInProgress: false,
+          lastBackupAt: now,
           lastCompletedOperation: SettingsOperation.backup,
         ),
       );

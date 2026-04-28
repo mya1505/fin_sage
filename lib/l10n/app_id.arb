@@ -50,6 +50,8 @@
   "englishLanguage": "Inggris",
   "indonesianLanguage": "Indonesia",
   "backupNow": "Backup Sekarang",
+  "lastBackupLabel": "Backup terakhir: {value}",
+  "noBackupHistory": "Belum ada riwayat backup",
   "restorePreview": "Pratinjau Restore",
   "noBackupFiles": "Belum ada file backup",
   "backupCompleted": "Backup berhasil",

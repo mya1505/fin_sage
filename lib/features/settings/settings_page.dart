@@ -9,6 +9,7 @@ import 'package:fin_sage/logic/settings/settings_cubit.dart';
 import 'package:fin_sage/logic/transactions/transaction_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -17,6 +18,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
 
     return ErrorBoundary(
       child: Scaffold(
@@ -107,6 +109,14 @@ class SettingsPage extends StatelessWidget {
                     onPressed: state.backupInProgress ? null : cubit.backupNow,
                     icon: const Icon(Icons.cloud_upload),
                     label: Text(l10n.backupNow),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    state.lastBackupAt == null
+                        ? l10n.noBackupHistory
+                        : l10n.lastBackupLabel(
+                            DateFormat.yMd(localeTag).add_Hm().format(state.lastBackupAt!.toLocal()),
+                          ),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(

@@ -8,6 +8,8 @@ abstract class SettingsStorage {
   Future<void> saveLocale(Locale? locale);
   Future<bool> loadNotificationsEnabled();
   Future<void> saveNotificationsEnabled(bool enabled);
+  Future<DateTime?> loadLastBackupAt();
+  Future<void> saveLastBackupAt(DateTime timestamp);
 }
 
 class SharedPrefsSettingsStorage implements SettingsStorage {
@@ -16,6 +18,7 @@ class SharedPrefsSettingsStorage implements SettingsStorage {
   static const String _themeModeKey = 'settings.theme_mode';
   static const String _localeKey = 'settings.locale';
   static const String _notificationsEnabledKey = 'settings.notifications_enabled';
+  static const String _lastBackupAtKey = 'settings.last_backup_at';
 
   final SharedPreferences _prefs;
 
@@ -63,5 +66,19 @@ class SharedPrefsSettingsStorage implements SettingsStorage {
   @override
   Future<void> saveNotificationsEnabled(bool enabled) async {
     await _prefs.setBool(_notificationsEnabledKey, enabled);
+  }
+
+  @override
+  Future<DateTime?> loadLastBackupAt() async {
+    final raw = _prefs.getString(_lastBackupAtKey);
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    return DateTime.tryParse(raw);
+  }
+
+  @override
+  Future<void> saveLastBackupAt(DateTime timestamp) async {
+    await _prefs.setString(_lastBackupAtKey, timestamp.toIso8601String());
   }
 }

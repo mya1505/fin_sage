@@ -16,6 +16,10 @@ void main() {
   late MockLocalDatabaseDataSource localDb;
   late SettingsCubit cubit;
 
+  setUpAll(() {
+    registerFallbackValue(DateTime(2026, 1, 1));
+  });
+
   setUp(() {
     repo = MockBackupRepository();
     storage = MockSettingsStorage();
@@ -25,6 +29,7 @@ void main() {
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
     when(() => storage.loadLocale()).thenAnswer((_) async => null);
     when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => true);
+    when(() => storage.loadLastBackupAt()).thenAnswer((_) async => null);
   });
 
   tearDown(() async {
@@ -33,23 +38,28 @@ void main() {
 
   test('backupNow should toggle loading state', () async {
     when(() => repo.backupNow()).thenAnswer((_) async {});
+    when(() => storage.saveLastBackupAt(any())).thenAnswer((_) async {});
 
     await cubit.backupNow();
 
     expect(cubit.state.backupInProgress, false);
+    expect(cubit.state.lastBackupAt, isNotNull);
     verify(() => repo.backupNow()).called(1);
+    verify(() => storage.saveLastBackupAt(any())).called(1);
   });
 
   test('loadSettings should apply saved theme, locale, and notification setting', () async {
     when(() => storage.loadThemeMode()).thenAnswer((_) async => ThemeMode.dark);
     when(() => storage.loadLocale()).thenAnswer((_) async => const Locale('id'));
     when(() => storage.loadNotificationsEnabled()).thenAnswer((_) async => false);
+    when(() => storage.loadLastBackupAt()).thenAnswer((_) async => DateTime(2026, 4, 1));
 
     await cubit.loadSettings();
 
     expect(cubit.state.themeMode, ThemeMode.dark);
     expect(cubit.state.locale, const Locale('id'));
     expect(cubit.state.notificationsEnabled, false);
+    expect(cubit.state.lastBackupAt, DateTime(2026, 4, 1));
   });
 
   test('setThemeMode should persist mode', () async {

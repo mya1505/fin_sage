@@ -37,6 +37,7 @@ Lihat folder `lib/` untuk pembagian:
 - Laporan mendukung filter bulanan dengan ringkasan income/expense/balance sebelum export.
 - Settings menyediakan aksi sign out dengan konfirmasi.
 - Settings mendukung toggle notifikasi budget dan reset data lokal aman.
+- Settings menampilkan riwayat waktu backup terakhir.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup

@@ -70,6 +70,8 @@ class AppLocalizations {
       'englishLanguage': 'English',
       'indonesianLanguage': 'Indonesian',
       'backupNow': 'Backup Now',
+      'lastBackupLabel': 'Last backup: {value}',
+      'noBackupHistory': 'No backup history yet',
       'restorePreview': 'Restore Preview',
       'noBackupFiles': 'No backup files found',
       'backupCompleted': 'Backup completed successfully',
@@ -156,6 +158,8 @@ class AppLocalizations {
       'englishLanguage': 'Inggris',
       'indonesianLanguage': 'Indonesia',
       'backupNow': 'Backup Sekarang',
+      'lastBackupLabel': 'Backup terakhir: {value}',
+      'noBackupHistory': 'Belum ada riwayat backup',
       'restorePreview': 'Pratinjau Restore',
       'noBackupFiles': 'Belum ada file backup',
       'backupCompleted': 'Backup berhasil',
@@ -245,6 +249,8 @@ class AppLocalizations {
   String get englishLanguage => _t('englishLanguage');
   String get indonesianLanguage => _t('indonesianLanguage');
   String get backupNow => _t('backupNow');
+  String lastBackupLabel(String value) => _t('lastBackupLabel').replaceAll('{value}', value);
+  String get noBackupHistory => _t('noBackupHistory');
   String get restorePreview => _t('restorePreview');
   String get noBackupFiles => _t('noBackupFiles');
   String get backupCompleted => _t('backupCompleted');
