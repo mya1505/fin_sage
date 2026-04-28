@@ -31,6 +31,25 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Security guardrails
+        run: |
+          # Ensure repository keeps placeholder-only key properties.
+          grep -q '^storePassword=\*\*\*$' android/key.properties
+          grep -q '^keyPassword=\*\*\*$' android/key.properties
+          grep -q '^keyAlias=\*\*\*$' android/key.properties
+
+          grep -q '^storePassword=\*\*\*$' android/app/key.properties
+          grep -q '^keyPassword=\*\*\*$' android/app/key.properties
+          grep -q '^keyAlias=\*\*\*$' android/app/key.properties
+
+          # Ensure no real keystore binaries are tracked.
+          tracked_keystore_files="$(git ls-files 'android/app/*.keystore')"
+          if [ -n "$tracked_keystore_files" ]; then
+            echo "Tracked keystore file detected:"
+            echo "$tracked_keystore_files"
+            exit 1
+          fi
+
       - name: Verify Dart formatting (non-blocking)
         id: format
         run: |

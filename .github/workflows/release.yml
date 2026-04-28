@@ -101,6 +101,12 @@ jobs:
           test -f pubspec.yaml
           test -f android/app.keystore.placeholder
           grep -q "REPLACE_WITH_REAL_KEYSTORE" android/app.keystore.placeholder
+          grep -q '^storePassword=\*\*\*$' android/key.properties
+          grep -q '^keyPassword=\*\*\*$' android/key.properties
+          grep -q '^keyAlias=\*\*\*$' android/key.properties
+          grep -q '^storePassword=\*\*\*$' android/app/key.properties
+          grep -q '^keyPassword=\*\*\*$' android/app/key.properties
+          grep -q '^keyAlias=\*\*\*$' android/app/key.properties
 
           if [[ "${GITHUB_REF_NAME}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
             tag_version="${BASH_REMATCH[1]}"
