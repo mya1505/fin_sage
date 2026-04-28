@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:fin_sage/core/errors/app_exception.dart';
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart' as http;
@@ -19,7 +20,7 @@ class GoogleDriveDataSource {
     if (headers == null) {
       throw const AppException(
         'Google auth headers unavailable',
-        code: 'google_auth_headers_unavailable',
+        code: AppErrorCodes.googleAuthHeadersUnavailable,
       );
     }
 

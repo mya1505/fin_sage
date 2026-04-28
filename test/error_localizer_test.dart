@@ -1,3 +1,4 @@
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:flutter/widgets.dart';
@@ -8,16 +9,19 @@ void main() {
   final l10nId = AppLocalizations(const Locale('id'));
 
   test('localizeErrorMessage maps known codes', () {
-    expect(localizeErrorMessage(l10nEn, 'category_already_exists'), l10nEn.categoryExists);
-    expect(localizeErrorMessage(l10nEn, 'backup_invalid_file'), l10nEn.backupInvalidFile);
-    expect(localizeErrorMessage(l10nEn, 'google_auth_headers_unavailable'), l10nEn.googleAuthUnavailable);
-    expect(localizeErrorMessage(l10nEn, 'no_data_to_export'), l10nEn.noDataToExport);
+    expect(localizeErrorMessage(l10nEn, AppErrorCodes.categoryAlreadyExists), l10nEn.categoryExists);
+    expect(localizeErrorMessage(l10nEn, AppErrorCodes.backupInvalidFile), l10nEn.backupInvalidFile);
+    expect(
+      localizeErrorMessage(l10nEn, AppErrorCodes.googleAuthHeadersUnavailable),
+      l10nEn.googleAuthUnavailable,
+    );
+    expect(localizeErrorMessage(l10nEn, AppErrorCodes.noDataToExport), l10nEn.noDataToExport);
   });
 
   test('localizeErrorMessage uses active locale', () {
-    expect(localizeErrorMessage(l10nId, 'category_in_use'), l10nId.categoryInUse);
+    expect(localizeErrorMessage(l10nId, AppErrorCodes.categoryInUse), l10nId.categoryInUse);
     expect(
-      localizeErrorMessage(l10nId, 'default_category_archive_blocked'),
+      localizeErrorMessage(l10nId, AppErrorCodes.defaultCategoryArchiveBlocked),
       l10nId.defaultCategoryArchiveBlocked,
     );
   });

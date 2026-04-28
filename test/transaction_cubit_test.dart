@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/models/category_model.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
@@ -80,7 +81,7 @@ void main() {
     build: () {
       when(
         () => repository.saveCategory(any()),
-      ).thenThrow(const AppException('Category already exists', code: 'category_already_exists'));
+      ).thenThrow(const AppException('Category already exists', code: AppErrorCodes.categoryAlreadyExists));
       return TransactionCubit(repository);
     },
     act: (cubit) => cubit.createCategory(
@@ -92,7 +93,7 @@ void main() {
         loading: false,
         items: [],
         categories: [],
-        error: 'category_already_exists',
+        error: AppErrorCodes.categoryAlreadyExists,
       ),
     ],
   );

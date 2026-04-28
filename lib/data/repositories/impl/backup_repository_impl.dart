@@ -1,5 +1,6 @@
 import 'package:crypto/crypto.dart';
 import 'package:fin_sage/core/utils/app_event_logger.dart';
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
@@ -193,7 +194,7 @@ class BackupRepositoryImpl implements BackupRepository {
       );
       throw const AppException(
         'Backup file invalid or corrupted',
-        code: 'backup_invalid_file',
+        code: AppErrorCodes.backupInvalidFile,
       );
     }
     final expectedChecksum = await _expectedChecksumForFileId(fileId);
@@ -210,7 +211,7 @@ class BackupRepositoryImpl implements BackupRepository {
         );
         throw const AppException(
           'Backup checksum mismatch',
-          code: 'backup_checksum_mismatch',
+          code: AppErrorCodes.backupChecksumMismatch,
         );
       }
       AppEventLogger.info('backup.restore.checksum_verified', data: {'file_id': fileId});

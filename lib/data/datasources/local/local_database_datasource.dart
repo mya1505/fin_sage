@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fin_sage/core/constants/app_constants.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/data/datasources/local/db_migration_service.dart';
 import 'package:fin_sage/data/datasources/local/secure_key_service.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
@@ -102,7 +103,7 @@ class LocalDatabaseDataSource {
     if (existing.isNotEmpty) {
       throw const AppException(
         'Category already exists',
-        code: 'category_already_exists',
+        code: AppErrorCodes.categoryAlreadyExists,
       );
     }
 
@@ -113,7 +114,7 @@ class LocalDatabaseDataSource {
     if (categoryId == 1) {
       throw const AppException(
         'Default category cannot be archived',
-        code: 'default_category_archive_blocked',
+        code: AppErrorCodes.defaultCategoryArchiveBlocked,
       );
     }
 
@@ -126,7 +127,7 @@ class LocalDatabaseDataSource {
     if (usedCount > 0) {
       throw const AppException(
         'Category is still used by transactions',
-        code: 'category_in_use',
+        code: AppErrorCodes.categoryInUse,
       );
     }
 

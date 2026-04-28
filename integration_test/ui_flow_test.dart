@@ -7,6 +7,7 @@ import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/features/reports/reports_page.dart';
@@ -242,7 +243,7 @@ void main() {
       ],
     );
     when(() => backupRepo.restoreFromFile('file-1')).thenThrow(
-      const AppException('Backup file invalid or corrupted', code: 'backup_invalid_file'),
+      const AppException('Backup file invalid or corrupted', code: AppErrorCodes.backupInvalidFile),
     );
 
     await settingsCubit.loadSettings();
@@ -316,7 +317,10 @@ void main() {
     when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
     when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
     when(() => backupRepo.backupNow()).thenThrow(
-      const AppException('Google auth headers unavailable', code: 'google_auth_headers_unavailable'),
+      const AppException(
+        'Google auth headers unavailable',
+        code: AppErrorCodes.googleAuthHeadersUnavailable,
+      ),
     );
 
     await settingsCubit.loadSettings();
