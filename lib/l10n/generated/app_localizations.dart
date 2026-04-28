@@ -21,6 +21,7 @@ class AppLocalizations {
   static const Map<String, Map<String, String>> _localizedValues = {
     'en': {
       'appTitle': 'FinSage',
+      'unexpectedError': 'Unexpected error',
       'signInGoogle': 'Continue with Google',
       'googleSignInConfigMissing':
           'GOOGLE_SERVER_CLIENT_ID is not set. Define it in dart-define for Google Drive backup auth.',
@@ -138,6 +139,7 @@ class AppLocalizations {
     },
     'id': {
       'appTitle': 'FinSage',
+      'unexpectedError': 'Terjadi kesalahan tak terduga',
       'signInGoogle': 'Masuk dengan Google',
       'googleSignInConfigMissing':
           'GOOGLE_SERVER_CLIENT_ID belum diisi. Tambahkan di dart-define untuk autentikasi backup Google Drive.',
@@ -258,6 +260,7 @@ class AppLocalizations {
   String _t(String key) => _localizedValues[locale.languageCode]?[key] ?? _localizedValues['en']![key] ?? key;
 
   String get appTitle => _t('appTitle');
+  String get unexpectedError => _t('unexpectedError');
   String get signInGoogle => _t('signInGoogle');
   String get googleSignInConfigMissing => _t('googleSignInConfigMissing');
   String get googleAuthUnavailable => _t('googleAuthUnavailable');

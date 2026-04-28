@@ -3,6 +3,7 @@ import 'package:fin_sage/l10n/generated/app_localizations.dart';
 
 String localizeErrorMessage(AppLocalizations l10n, String rawMessage) {
   return switch (rawMessage) {
+    AppErrorCodes.unexpectedError => l10n.unexpectedError,
     AppErrorCodes.categoryAlreadyExists => l10n.categoryExists,
     AppErrorCodes.categoryInUse => l10n.categoryInUse,
     AppErrorCodes.defaultCategoryArchiveBlocked => l10n.defaultCategoryArchiveBlocked,

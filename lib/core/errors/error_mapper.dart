@@ -1,3 +1,4 @@
+import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
 
 String mapErrorMessage(Object error) {
@@ -10,7 +11,7 @@ String mapErrorMessage(Object error) {
 
   final raw = error.toString().trim();
   if (raw.isEmpty) {
-    return 'Unexpected error';
+    return AppErrorCodes.unexpectedError;
   }
 
   const prefixes = <String>[
@@ -23,7 +24,8 @@ String mapErrorMessage(Object error) {
 
   for (final prefix in prefixes) {
     if (raw.startsWith(prefix)) {
-      return raw.substring(prefix.length).trim();
+      final stripped = raw.substring(prefix.length).trim();
+      return stripped.isEmpty ? AppErrorCodes.unexpectedError : stripped;
     }
   }
 

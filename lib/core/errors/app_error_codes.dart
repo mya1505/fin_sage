@@ -1,4 +1,6 @@
 abstract final class AppErrorCodes {
+  static const String unexpectedError = 'unexpected_error';
+
   static const String categoryAlreadyExists = 'category_already_exists';
   static const String categoryInUse = 'category_in_use';
   static const String defaultCategoryArchiveBlocked = 'default_category_archive_blocked';

@@ -9,6 +9,7 @@ void main() {
   final l10nId = AppLocalizations(const Locale('id'));
 
   test('localizeErrorMessage maps known codes', () {
+    expect(localizeErrorMessage(l10nEn, AppErrorCodes.unexpectedError), l10nEn.unexpectedError);
     expect(localizeErrorMessage(l10nEn, AppErrorCodes.categoryAlreadyExists), l10nEn.categoryExists);
     expect(localizeErrorMessage(l10nEn, AppErrorCodes.backupInvalidFile), l10nEn.backupInvalidFile);
     expect(
