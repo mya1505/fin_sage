@@ -48,4 +48,18 @@ void main() {
       isA<AuthState>().having((s) => s.status, 'status', AuthStatus.error),
     ],
   );
+
+  blocTest<AuthCubit, AuthState>(
+    'bootstrap emits unauthenticated with error when repository throws',
+    build: () {
+      when(() => repository.isSignedIn()).thenThrow(Exception('session error'));
+      return AuthCubit(repository);
+    },
+    act: (cubit) => cubit.bootstrap(),
+    expect: () => [
+      isA<AuthState>()
+          .having((s) => s.status, 'status', AuthStatus.unauthenticated)
+          .having((s) => s.errorMessage, 'errorMessage', contains('session error')),
+    ],
+  );
 }

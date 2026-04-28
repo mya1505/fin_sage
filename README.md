@@ -42,6 +42,7 @@ Lihat folder `lib/` untuk pembagian:
 - Settings menyediakan aksi sign out dengan konfirmasi.
 - Settings mendukung toggle notifikasi budget dan reset data lokal aman.
 - Settings menampilkan riwayat waktu backup terakhir.
+- Auth bootstrap melakukan silent session restore agar status login lebih konsisten setelah restart.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup

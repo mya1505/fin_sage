@@ -7,7 +7,13 @@ class AuthRepositoryImpl implements AuthRepository {
   final GoogleSignIn _googleSignIn;
 
   @override
-  Future<bool> isSignedIn() async => _googleSignIn.currentUser != null;
+  Future<bool> isSignedIn() async {
+    if (_googleSignIn.currentUser != null) {
+      return true;
+    }
+    final account = await _googleSignIn.signInSilently();
+    return account != null;
+  }
 
   @override
   Future<bool> signInWithGoogle() async {
@@ -16,5 +22,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() => _googleSignIn.signOut();
+  Future<void> signOut() async {
+    try {
+      await _googleSignIn.disconnect();
+    } catch (_) {
+      // Ignore disconnect errors and continue sign-out.
+    }
+    await _googleSignIn.signOut();
+  }
 }
