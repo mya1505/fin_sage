@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,13 +29,34 @@ Future<void> main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 1.0;
+      options.tracesSampleRate = _sentrySampleRate();
     },
-    appRunner: () => runZonedGuarded(
-      () => runApp(const ErrorBoundary(child: FinSageApp())),
-      (error, stackTrace) => Sentry.captureException(error, stackTrace: stackTrace),
-    ),
+    appRunner: () {
+      FlutterError.onError = (FlutterErrorDetails details) {
+        FlutterError.presentError(details);
+        unawaited(Sentry.captureException(details.exception, stackTrace: details.stack));
+      };
+
+      PlatformDispatcher.instance.onError = (error, stackTrace) {
+        unawaited(Sentry.captureException(error, stackTrace: stackTrace));
+        return true;
+      };
+
+      runZonedGuarded(
+        () => runApp(const ErrorBoundary(child: FinSageApp())),
+        (error, stackTrace) => Sentry.captureException(error, stackTrace: stackTrace),
+      );
+    },
   );
+}
+
+double _sentrySampleRate() {
+  final raw = const String.fromEnvironment('SENTRY_TRACE_SAMPLE_RATE', defaultValue: '0.1');
+  final parsed = double.tryParse(raw);
+  if (parsed == null || parsed < 0 || parsed > 1) {
+    return 0.1;
+  }
+  return parsed;
 }
 
 class FinSageApp extends StatelessWidget {

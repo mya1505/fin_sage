@@ -58,8 +58,11 @@ Lihat folder `lib/` untuk pembagian:
 3. Set `dart-define` Google OAuth saat build Android:
    - `GOOGLE_CLIENT_ID`
    - `GOOGLE_SERVER_CLIENT_ID`
-4. Commit dan push ke GitHub branch `main`
-5. Workflow GitHub Actions:
+4. (Opsional) Konfigurasi observability:
+   - `SENTRY_DSN`
+   - `SENTRY_TRACE_SAMPLE_RATE` (0.0 - 1.0, default `0.1`)
+5. Commit dan push ke GitHub branch `main`
+6. Workflow GitHub Actions:
    - `testing.yml`: jalan saat `push` ke `main` (security guardrail, format check, static analysis, unit/widget/integration tests)
    - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release)
    - Artefak release bernama `finsage-vX.Y.Z-release.apk` + file checksum `finsage-vX.Y.Z-release.apk.sha256`.
