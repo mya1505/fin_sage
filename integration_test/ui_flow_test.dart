@@ -9,6 +9,7 @@ import 'package:fin_sage/data/repositories/budget_repository.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
 import 'package:fin_sage/core/errors/app_error_codes.dart';
 import 'package:fin_sage/core/errors/app_exception.dart';
+import 'package:fin_sage/core/constants/app_constants.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/features/reports/reports_page.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
@@ -388,5 +389,65 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No data to export'), findsOneWidget);
+  });
+
+  testWidgets('settings page should show app info card', (tester) async {
+    final txRepo = MockTransactionRepository();
+    final budgetRepo = MockBudgetRepository();
+    final backupRepo = MockBackupRepository();
+    final settingsStorage = MockSettingsStorage();
+    final localDb = MockLocalDatabaseDataSource();
+    final notificationService = MockBudgetNotificationService();
+    final telemetryStorage = MockAutoBackupTelemetryStorage();
+    final validationScheduler = MockAutoBackupValidationScheduler();
+
+    final txCubit = TransactionCubit(txRepo);
+    final budgetCubit = BudgetCubit(budgetRepo, notificationService, settingsStorage);
+    final dashboardCubit = DashboardCubit(txRepo);
+    final settingsCubit =
+        SettingsCubit(backupRepo, settingsStorage, localDb, telemetryStorage, validationScheduler);
+
+    addTearDown(txCubit.close);
+    addTearDown(budgetCubit.close);
+    addTearDown(dashboardCubit.close);
+    addTearDown(settingsCubit.close);
+
+    when(() => txRepo.fetchCategories()).thenAnswer((_) async => const []);
+    when(() => txRepo.fetchTransactions()).thenAnswer((_) async => const []);
+    when(() => txRepo.monthlySummary()).thenAnswer((_) async => {'income': 0, 'expense': 0});
+    when(() => budgetRepo.fetchBudgets()).thenAnswer((_) async => const []);
+    when(() => settingsStorage.loadNotificationsEnabled()).thenAnswer((_) async => true);
+    when(() => settingsStorage.loadThemeMode()).thenAnswer((_) async => ThemeMode.system);
+    when(() => settingsStorage.loadLocale()).thenAnswer((_) async => null);
+    when(() => settingsStorage.loadLastBackupAt()).thenAnswer((_) async => null);
+    when(() => telemetryStorage.loadTelemetry()).thenAnswer((_) async => const AutoBackupTelemetry());
+    when(() => validationScheduler.scheduleValidationNow()).thenAnswer((_) async {});
+
+    await settingsCubit.loadSettings();
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<TransactionCubit>.value(value: txCubit),
+          BlocProvider<BudgetCubit>.value(value: budgetCubit),
+          BlocProvider<DashboardCubit>.value(value: dashboardCubit),
+          BlocProvider<SettingsCubit>.value(value: settingsCubit),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SettingsPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('App Info'), findsOneWidget);
+    expect(find.text('Version: ${AppConstants.appVersion}'), findsOneWidget);
   });
 }

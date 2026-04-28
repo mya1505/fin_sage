@@ -37,6 +37,9 @@ class AppLocalizations {
       'budgetsTitle': 'Budgets',
       'reportsTitle': 'Reports',
       'settingsTitle': 'Settings',
+      'operationInProgress': 'Processing request...',
+      'appInfoTitle': 'App Info',
+      'appVersionLabel': 'Version',
       'refreshLabel': 'Refresh',
       'addTransaction': 'Add Transaction',
       'emptyTransactions': 'No transactions yet',
@@ -155,6 +158,9 @@ class AppLocalizations {
       'budgetsTitle': 'Anggaran',
       'reportsTitle': 'Laporan',
       'settingsTitle': 'Pengaturan',
+      'operationInProgress': 'Memproses permintaan...',
+      'appInfoTitle': 'Info Aplikasi',
+      'appVersionLabel': 'Versi',
       'refreshLabel': 'Muat Ulang',
       'addTransaction': 'Tambah Transaksi',
       'emptyTransactions': 'Belum ada transaksi',
@@ -275,6 +281,9 @@ class AppLocalizations {
   String get budgetsTitle => _t('budgetsTitle');
   String get reportsTitle => _t('reportsTitle');
   String get settingsTitle => _t('settingsTitle');
+  String get operationInProgress => _t('operationInProgress');
+  String get appInfoTitle => _t('appInfoTitle');
+  String get appVersionLabel => _t('appVersionLabel');
   String get refreshLabel => _t('refreshLabel');
   String get addTransaction => _t('addTransaction');
   String get emptyTransactions => _t('emptyTransactions');

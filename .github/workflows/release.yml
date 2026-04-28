@@ -157,6 +157,7 @@ jobs:
       - name: Build release APK
         run: |
           flutter build apk --release \
+            --dart-define=APP_VERSION="${{ steps.meta.outputs.release_version }}" \
             --dart-define=GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
             --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID"
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fin_sage/core/constants/app_constants.dart';
 import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
@@ -80,6 +81,23 @@ class SettingsPage extends StatelessWidget {
               return ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  if (state.backupInProgress) ...[
+                    Semantics(
+                      label: l10n.operationInProgress,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const LinearProgressIndicator(),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.operationInProgress,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(l10n.darkMode),
@@ -166,6 +184,14 @@ class SettingsPage extends StatelessWidget {
                     label: Text(l10n.resetLocalDataLabel),
                   ),
                   const SizedBox(height: 16),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.info_outline),
+                      title: Text(l10n.appInfoTitle),
+                      subtitle: Text('${l10n.appVersionLabel}: ${AppConstants.appVersion}'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Lottie.asset(LottiePlaceholders.backupAnimation, height: 140),
                   const SizedBox(height: 16),
                   FilledButton.tonalIcon(

@@ -47,6 +47,7 @@ Lihat folder `lib/` untuk pembagian:
 - Settings mendukung toggle notifikasi budget dan reset data lokal aman.
 - Settings menampilkan riwayat waktu backup terakhir.
 - Settings menampilkan status auto-backup (attempt/success/error) dan tombol validasi job background.
+- Settings menampilkan indikator progress saat operasi backup/restore berjalan dan kartu info aplikasi (nama + versi build).
 - Auth bootstrap melakukan silent session restore agar status login lebih konsisten setelah restart.
 - Inisialisasi service startup (notifikasi + auto-backup scheduler) bersifat fail-safe agar app tetap bisa boot jika plugin background gagal.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
@@ -65,7 +66,7 @@ Lihat folder `lib/` untuk pembagian:
 5. Commit dan push ke GitHub branch `main`
 6. Workflow GitHub Actions:
    - `testing.yml`: jalan saat `push` ke `main` (security guardrail, format check, static analysis, unit/widget/integration tests, concurrency cancel run lama)
-   - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release, cleanup material signing setelah build)
+   - `release.yml`: jalan saat push tag `vX.Y.Z` (preflight check tag vs pubspec version, build APK signed, inject `APP_VERSION` via `dart-define`, verifikasi signature + checksum, verifikasi ulang checksum artifact sebelum publish GitHub Release, cleanup material signing setelah build)
    - Artefak release bernama `finsage-vX.Y.Z-release.apk` + file checksum `finsage-vX.Y.Z-release.apk.sha256`.
 
 ## Screenshots (Placeholder)
