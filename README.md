@@ -57,7 +57,7 @@ Lihat folder `lib/` untuk pembagian:
 4. Commit dan push ke GitHub branch `main`
 5. Workflow GitHub Actions:
    - `testing.yml`: jalan saat `push` ke `main` (unit/widget/integration tests)
-   - `release.yml`: jalan saat push tag `vX.Y.Z` (test gate, build APK signed, build iOS no-codesign, publish GitHub Release)
+   - `release.yml`: jalan saat push tag `vX.Y.Z` (test gate, build APK signed, verifikasi signature + checksum, publish GitHub Release)
 
 ## Screenshots (Placeholder)
 
