@@ -33,7 +33,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.budgetsTitle)),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => _showCreateBudgetForm(context),
+          onPressed: () => _showBudgetForm(context),
           tooltip: l10n.budgetsTitle,
           child: const Icon(Icons.add_chart),
         ),
@@ -97,9 +97,19 @@ class _BudgetsPageState extends State<BudgetsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              monthLabel,
-                              style: Theme.of(context).textTheme.titleMedium,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    monthLabel,
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined),
+                                  onPressed: () => _showBudgetForm(context, existing: budget),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 4),
                             Text('${l10n.categoryLabel}: $categoryLabel'),
@@ -133,14 +143,19 @@ class _BudgetsPageState extends State<BudgetsPage> {
     );
   }
 
-  Future<void> _showCreateBudgetForm(BuildContext context) async {
+  Future<void> _showBudgetForm(BuildContext context, {BudgetModel? existing}) async {
     final l10n = AppLocalizations.of(context)!;
     final formKey = GlobalKey<FormState>();
-    final limitCtrl = TextEditingController();
-    final usedCtrl = TextEditingController(text: '0');
-    DateTime selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+    final limitCtrl = TextEditingController(text: existing?.limitAmount.toStringAsFixed(0) ?? '');
+    final usedCtrl = TextEditingController(text: existing?.usedAmount.toStringAsFixed(0) ?? '0');
+    DateTime selectedMonth =
+        existing?.month ?? DateTime(DateTime.now().year, DateTime.now().month);
     final categories = context.read<TransactionCubit>().state.categories;
-    int selectedCategoryId = categories.isNotEmpty ? (categories.first.id ?? 1) : 1;
+    final hasExistingCategory =
+        existing != null && categories.any((category) => category.id == existing.categoryId);
+    int selectedCategoryId = hasExistingCategory
+        ? existing!.categoryId
+        : (categories.isNotEmpty ? (categories.first.id ?? 1) : (existing?.categoryId ?? 1));
 
     await showModalBottomSheet<void>(
       context: context,
@@ -245,7 +260,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                               }
                               await context.read<BudgetCubit>().saveBudget(
                                     BudgetModel(
-                                      id: null,
+                                      id: existing?.id,
                                       categoryId: selectedCategoryId,
                                       month: selectedMonth,
                                       limitAmount: double.parse(limitCtrl.text.replaceAll(',', '.')),
@@ -256,7 +271,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                 Navigator.pop(sheetContext);
                               }
                             },
-                            child: Text(l10n.saveLabel),
+                            child: Text(existing == null ? l10n.saveLabel : l10n.updateActionLabel),
                           ),
                         ),
                       ],
