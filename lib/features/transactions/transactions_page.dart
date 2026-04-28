@@ -56,9 +56,13 @@ class _TransactionsPageState extends State<TransactionsPage> {
               if (state.error == null) {
                 return;
               }
-              final message = state.error!.contains('Category already exists')
-                  ? l10n.categoryExists
-                  : state.error!;
+              final message = switch (state.error!) {
+                final error when error.contains('Category already exists') => l10n.categoryExists,
+                final error when error.contains('Category is still used') => l10n.categoryInUse,
+                final error when error.contains('Default category cannot be archived') =>
+                  l10n.defaultCategoryArchiveBlocked,
+                _ => state.error!,
+              };
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(message),
@@ -418,62 +422,119 @@ class _TransactionsPageState extends State<TransactionsPage> {
     final nameCtrl = TextEditingController();
     final colorCtrl = TextEditingController(text: '#0D3B66');
     final iconCtrl = TextEditingController(text: 'wallet');
+    final cubit = context.read<TransactionCubit>();
 
     final created = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(l10n.addCategory),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameCtrl,
-                  decoration: InputDecoration(labelText: l10n.categoryNameLabel),
-                  validator: (value) => _errorFromCode(l10n, Validators.categoryName(value)),
+        var categories = List<CategoryModel>.from(cubit.state.categories);
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: Text(l10n.manageCategories),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (categories.isNotEmpty) ...[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            l10n.categoryLabel,
+                            style: Theme.of(dialogContext).textTheme.titleSmall,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 180),
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: categories.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (_, index) {
+                              final category = categories[index];
+                              return ListTile(
+                                dense: true,
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(category.name),
+                                subtitle: Text(category.colorHex),
+                                trailing: category.id == null || category.id == 1
+                                    ? null
+                                    : IconButton(
+                                        icon: const Icon(Icons.archive_outlined),
+                                        onPressed: () async {
+                                          final approved = await _confirmArchiveCategory(
+                                            dialogContext,
+                                            category.name,
+                                          );
+                                          if (!approved || category.id == null) {
+                                            return;
+                                          }
+                                          await cubit.archiveCategory(category.id!);
+                                          if (cubit.state.error == null) {
+                                            setDialogState(() {
+                                              categories = List<CategoryModel>.from(cubit.state.categories);
+                                            });
+                                          }
+                                        },
+                                      ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      TextFormField(
+                        controller: nameCtrl,
+                        decoration: InputDecoration(labelText: l10n.categoryNameLabel),
+                        validator: (value) => _errorFromCode(l10n, Validators.categoryName(value)),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: colorCtrl,
+                        decoration: InputDecoration(labelText: l10n.colorHexLabel),
+                        validator: (value) => _errorFromCode(l10n, Validators.hexColor(value)),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: iconCtrl,
+                        decoration: InputDecoration(labelText: l10n.iconLabel),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: colorCtrl,
-                  decoration: InputDecoration(labelText: l10n.colorHexLabel),
-                  validator: (value) => _errorFromCode(l10n, Validators.hexColor(value)),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(l10n.cancelLabel),
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: iconCtrl,
-                  decoration: InputDecoration(labelText: l10n.iconLabel),
+                FilledButton(
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) {
+                      return;
+                    }
+                    await cubit.createCategory(
+                          CategoryModel(
+                            id: null,
+                            name: nameCtrl.text.trim(),
+                            colorHex: colorCtrl.text.trim().isEmpty ? '#0D3B66' : colorCtrl.text.trim(),
+                            icon: iconCtrl.text.trim().isEmpty ? 'wallet' : iconCtrl.text.trim(),
+                          ),
+                        );
+                    if (cubit.state.error == null) {
+                      if (dialogContext.mounted) {
+                        Navigator.pop(dialogContext, true);
+                      }
+                    }
+                  },
+                  child: Text(l10n.saveLabel),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(l10n.cancelLabel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                if (!formKey.currentState!.validate()) {
-                  return;
-                }
-                final cubit = context.read<TransactionCubit>();
-                await cubit.createCategory(
-                      CategoryModel(
-                        id: null,
-                        name: nameCtrl.text.trim(),
-                        colorHex: colorCtrl.text.trim().isEmpty ? '#0D3B66' : colorCtrl.text.trim(),
-                        icon: iconCtrl.text.trim().isEmpty ? 'wallet' : iconCtrl.text.trim(),
-                      ),
-                    );
-                if (dialogContext.mounted && cubit.state.error == null) {
-                  Navigator.pop(dialogContext, true);
-                }
-              },
-              child: Text(l10n.saveLabel),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -481,6 +542,30 @@ class _TransactionsPageState extends State<TransactionsPage> {
     if (created == true && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.categoryCreated)));
     }
+  }
+
+  Future<bool> _confirmArchiveCategory(BuildContext context, String categoryName) async {
+    final l10n = AppLocalizations.of(context)!;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.archiveCategoryTitle),
+          content: Text(l10n.archiveCategoryBody(categoryName)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(l10n.archiveActionLabel),
+            ),
+          ],
+        );
+      },
+    );
+    return approved == true;
   }
 
   String? _errorFromCode(AppLocalizations l10n, String? code) {

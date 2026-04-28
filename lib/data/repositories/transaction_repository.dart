@@ -7,5 +7,6 @@ abstract class TransactionRepository {
   Future<void> deleteTransaction(int transactionId);
   Future<List<CategoryModel>> fetchCategories();
   Future<void> saveCategory(CategoryModel category);
+  Future<void> archiveCategory(int categoryId);
   Future<Map<String, double>> monthlySummary();
 }

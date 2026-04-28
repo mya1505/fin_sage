@@ -65,7 +65,12 @@ class LocalDatabaseDataSource {
 
   Future<List<CategoryModel>> getCategories() async {
     final db = await _database();
-    final rows = await db.query('categories', orderBy: 'name ASC');
+    final rows = await db.query(
+      'categories',
+      where: 'is_archived = ?',
+      whereArgs: [0],
+      orderBy: 'name ASC',
+    );
     return rows.map(CategoryModel.fromMap).toList();
   }
 
@@ -83,6 +88,29 @@ class LocalDatabaseDataSource {
     }
 
     await db.insert('categories', category.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
+  Future<void> archiveCategory(int categoryId) async {
+    if (categoryId == 1) {
+      throw StateError('Default category cannot be archived');
+    }
+
+    final db = await _database();
+    final usage = await db.rawQuery(
+      'SELECT COUNT(*) AS total FROM transactions WHERE category_id = ?',
+      [categoryId],
+    );
+    final usedCount = (usage.first['total'] as num?)?.toInt() ?? 0;
+    if (usedCount > 0) {
+      throw StateError('Category is still used by transactions');
+    }
+
+    await db.update(
+      'categories',
+      {'is_archived': 1},
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
   }
 
   Future<List<BudgetModel>> getBudgets() async {

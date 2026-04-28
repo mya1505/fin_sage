@@ -20,6 +20,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<void> saveCategory(CategoryModel category) => _local.saveCategory(category);
 
   @override
+  Future<void> archiveCategory(int categoryId) => _local.archiveCategory(categoryId);
+
+  @override
   Future<void> saveTransaction(TransactionModel transaction) => _local.saveTransaction(transaction);
 
   @override

@@ -88,4 +88,14 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(state.copyWith(error: e.toString()));
     }
   }
+
+  Future<void> archiveCategory(int categoryId) async {
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.archiveCategory(categoryId);
+      await loadTransactions();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
 }

@@ -32,6 +32,7 @@ Lihat folder `lib/` untuk pembagian:
 - Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
 - Form transaksi mendukung tipe `income/expense` dan pemilihan kategori.
 - Kategori kustom dapat ditambah langsung dari halaman transaksi.
+- Kategori non-default dapat diarsipkan jika belum dipakai oleh transaksi.
 - Ekspor CSV disimpan ke file sementara dan ditampilkan path hasil ekspor.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 

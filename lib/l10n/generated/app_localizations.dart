@@ -79,6 +79,11 @@ class AppLocalizations {
       'iconLabel': 'Icon Name',
       'categoryCreated': 'Category created',
       'categoryExists': 'Category already exists',
+      'categoryInUse': 'Category is still used by transactions',
+      'defaultCategoryArchiveBlocked': 'Default category cannot be archived',
+      'archiveCategoryTitle': 'Archive Category',
+      'archiveCategoryBody': 'Archive category "{name}"?',
+      'archiveActionLabel': 'Archive',
       'categoryNameRequired': 'Category name is required',
       'categoryNameTooLong': 'Category name is too long',
       'invalidColorHex': 'Invalid hex color, use format #RRGGBB',
@@ -148,6 +153,11 @@ class AppLocalizations {
       'iconLabel': 'Nama Ikon',
       'categoryCreated': 'Kategori berhasil dibuat',
       'categoryExists': 'Kategori sudah ada',
+      'categoryInUse': 'Kategori masih digunakan oleh transaksi',
+      'defaultCategoryArchiveBlocked': 'Kategori default tidak bisa diarsipkan',
+      'archiveCategoryTitle': 'Arsipkan Kategori',
+      'archiveCategoryBody': 'Arsipkan kategori "{name}"?',
+      'archiveActionLabel': 'Arsipkan',
       'categoryNameRequired': 'Nama kategori wajib diisi',
       'categoryNameTooLong': 'Nama kategori terlalu panjang',
       'invalidColorHex': 'Hex warna tidak valid, gunakan format #RRGGBB',
@@ -220,6 +230,11 @@ class AppLocalizations {
   String get iconLabel => _t('iconLabel');
   String get categoryCreated => _t('categoryCreated');
   String get categoryExists => _t('categoryExists');
+  String get categoryInUse => _t('categoryInUse');
+  String get defaultCategoryArchiveBlocked => _t('defaultCategoryArchiveBlocked');
+  String get archiveCategoryTitle => _t('archiveCategoryTitle');
+  String archiveCategoryBody(String name) => _t('archiveCategoryBody').replaceAll('{name}', name);
+  String get archiveActionLabel => _t('archiveActionLabel');
   String get categoryNameRequired => _t('categoryNameRequired');
   String get categoryNameTooLong => _t('categoryNameTooLong');
   String get invalidColorHex => _t('invalidColorHex');

@@ -82,4 +82,21 @@ void main() {
     ],
     verify: (_) => verify(() => repository.saveCategory(any())).called(1),
   );
+
+  blocTest<TransactionCubit, TransactionState>(
+    'archiveCategory archives category and reloads items',
+    build: () {
+      when(() => repository.archiveCategory(2)).thenAnswer((_) async {});
+      when(() => repository.fetchTransactions()).thenAnswer((_) async => transactions);
+      when(() => repository.fetchCategories()).thenAnswer((_) async => categories);
+      return TransactionCubit(repository);
+    },
+    act: (cubit) => cubit.archiveCategory(2),
+    expect: () => [
+      const TransactionState(loading: false, items: [], categories: [], error: null),
+      const TransactionState(loading: true),
+      TransactionState(loading: false, items: transactions, categories: categories),
+    ],
+    verify: (_) => verify(() => repository.archiveCategory(2)).called(1),
+  );
 }
