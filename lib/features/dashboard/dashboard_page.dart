@@ -91,6 +91,7 @@ class DashboardPage extends StatelessWidget {
                             title: Text(state.error!),
                             trailing: IconButton(
                               icon: const Icon(Icons.refresh),
+                              tooltip: l10n.refreshLabel,
                               onPressed: () => context.read<DashboardCubit>().loadOverview(),
                             ),
                           ),

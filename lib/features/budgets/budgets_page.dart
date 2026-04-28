@@ -108,10 +108,12 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.edit_outlined),
+                                  tooltip: l10n.updateActionLabel,
                                   onPressed: () => _showBudgetForm(context, existing: budget),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete_outline),
+                                  tooltip: l10n.deleteActionLabel,
                                   onPressed: budget.id == null
                                       ? null
                                       : () => _confirmDeleteBudget(context, budget.id!),

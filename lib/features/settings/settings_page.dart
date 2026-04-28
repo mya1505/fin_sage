@@ -187,6 +187,7 @@ class SettingsPage extends StatelessWidget {
                           subtitle: Text('$createdAt • $fileSize'),
                           trailing: IconButton(
                             icon: const Icon(Icons.download),
+                            tooltip: l10n.restoreActionLabel,
                             onPressed: () => _confirmRestore(context, file.id),
                           ),
                         ),
@@ -352,6 +353,7 @@ class _AutoBackupStatus extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => context.read<SettingsCubit>().refreshAutoBackupTelemetry(),
+                  tooltip: l10n.refreshLabel,
                   icon: const Icon(Icons.refresh),
                 ),
               ],

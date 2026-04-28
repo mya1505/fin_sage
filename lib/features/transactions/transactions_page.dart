@@ -184,10 +184,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
                               ),
                               IconButton(
                                 icon: const Icon(Icons.edit_outlined),
+                                tooltip: l10n.updateActionLabel,
                                 onPressed: tx.id == null ? null : () => _showTransactionForm(context, existing: tx),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline),
+                                tooltip: l10n.deleteActionLabel,
                                 onPressed: tx.id == null ? null : () => _confirmDelete(context, tx.id!),
                               ),
                             ],

@@ -14,6 +14,7 @@
   "budgetsTitle": "Anggaran",
   "reportsTitle": "Laporan",
   "settingsTitle": "Pengaturan",
+  "refreshLabel": "Muat Ulang",
   "addTransaction": "Tambah Transaksi",
   "emptyTransactions": "Belum ada transaksi",
   "searchTransactions": "Cari transaksi",

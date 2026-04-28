@@ -35,6 +35,7 @@ class AppLocalizations {
       'budgetsTitle': 'Budgets',
       'reportsTitle': 'Reports',
       'settingsTitle': 'Settings',
+      'refreshLabel': 'Refresh',
       'addTransaction': 'Add Transaction',
       'emptyTransactions': 'No transactions yet',
       'searchTransactions': 'Search transactions',
@@ -138,6 +139,7 @@ class AppLocalizations {
       'budgetsTitle': 'Anggaran',
       'reportsTitle': 'Laporan',
       'settingsTitle': 'Pengaturan',
+      'refreshLabel': 'Muat Ulang',
       'addTransaction': 'Tambah Transaksi',
       'emptyTransactions': 'Belum ada transaksi',
       'searchTransactions': 'Cari transaksi',
@@ -243,6 +245,7 @@ class AppLocalizations {
   String get budgetsTitle => _t('budgetsTitle');
   String get reportsTitle => _t('reportsTitle');
   String get settingsTitle => _t('settingsTitle');
+  String get refreshLabel => _t('refreshLabel');
   String get addTransaction => _t('addTransaction');
   String get emptyTransactions => _t('emptyTransactions');
   String get searchTransactions => _t('searchTransactions');
