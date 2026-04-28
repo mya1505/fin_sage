@@ -40,8 +40,32 @@ jobs:
           flutter create . --platforms=linux
 
       - name: Run integration tests (best effort)
+        id: integration
         timeout-minutes: 3
         run: |
-          if ! timeout 2m flutter test integration_test -d linux > /tmp/integration_test.log 2>&1; then
-            echo "Integration tests failed or timed out; continuing because this stage is non-blocking."
+          set +e
+          timeout 2m flutter test integration_test -d linux > /tmp/integration_test.log 2>&1
+          test_exit_code=$?
+          set -e
+
+          if [ $test_exit_code -ne 0 ]; then
+            echo "Integration tests failed or timed out; stage remains non-blocking."
+            echo "integration_status=failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "integration_status=passed" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload integration test log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-log
+          path: /tmp/integration_test.log
+
+      - name: Integration test summary
+        if: always()
+        run: |
+          if [ "${{ steps.integration.outputs.integration_status }}" = "passed" ]; then
+            echo "Integration tests passed." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Integration tests failed or timed out (non-blocking)." >> "$GITHUB_STEP_SUMMARY"
           fi
