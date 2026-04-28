@@ -31,6 +31,7 @@ Lihat folder `lib/` untuk pembagian:
 - Migrasi database dipusatkan di `DbMigrationService` untuk upgrade schema bertahap.
 - Dashboard menampilkan ringkasan bulanan + transaksi terbaru.
 - Form transaksi mendukung tipe `income/expense` dan pemilihan kategori.
+- Kategori kustom dapat ditambah langsung dari halaman transaksi.
 - Proses restore backup memiliki dialog konfirmasi sebelum overwrite data lokal.
 
 ## Setup

@@ -11,6 +11,12 @@ class MockTransactionRepository extends Mock implements TransactionRepository {}
 void main() {
   late MockTransactionRepository repository;
 
+  setUpAll(() {
+    registerFallbackValue(
+      const CategoryModel(id: null, name: 'Fallback', colorHex: '#0D3B66', icon: 'wallet'),
+    );
+  });
+
   const categories = [
     CategoryModel(id: 1, name: 'General', colorHex: '#0D3B66', icon: 'wallet'),
   ];
@@ -56,5 +62,24 @@ void main() {
       const TransactionState(loading: true),
       isA<TransactionState>().having((s) => s.error, 'error', contains('db failure')),
     ],
+  );
+
+  blocTest<TransactionCubit, TransactionState>(
+    'createCategory saves category and reloads items',
+    build: () {
+      when(() => repository.saveCategory(any())).thenAnswer((_) async {});
+      when(() => repository.fetchTransactions()).thenAnswer((_) async => transactions);
+      when(() => repository.fetchCategories()).thenAnswer((_) async => categories);
+      return TransactionCubit(repository);
+    },
+    act: (cubit) => cubit.createCategory(
+      const CategoryModel(id: null, name: 'Food', colorHex: '#F4A261', icon: 'restaurant'),
+    ),
+    expect: () => [
+      const TransactionState(loading: false, items: [], categories: [], error: null),
+      const TransactionState(loading: true),
+      TransactionState(loading: false, items: transactions, categories: categories),
+    ],
+    verify: (_) => verify(() => repository.saveCategory(any())).called(1),
   );
 }

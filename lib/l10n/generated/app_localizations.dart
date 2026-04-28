@@ -70,6 +70,16 @@ class AppLocalizations {
       'restoreCompleted': 'Restore completed successfully',
       'restoreConfirmTitle': 'Confirm Restore',
       'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
+      'manageCategories': 'Manage categories',
+      'addCategory': 'Add Category',
+      'categoryNameLabel': 'Category Name',
+      'colorHexLabel': 'Color (Hex)',
+      'iconLabel': 'Icon Name',
+      'categoryCreated': 'Category created',
+      'categoryExists': 'Category already exists',
+      'categoryNameRequired': 'Category name is required',
+      'categoryNameTooLong': 'Category name is too long',
+      'invalidColorHex': 'Invalid hex color, use format #RRGGBB',
       'confirmDeleteTitle': 'Delete Transaction',
       'confirmDeleteBody': 'This transaction will be permanently removed. Continue?',
       'cancelLabel': 'Cancel',
@@ -127,6 +137,16 @@ class AppLocalizations {
       'restoreCompleted': 'Restore berhasil',
       'restoreConfirmTitle': 'Konfirmasi Restore',
       'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
+      'manageCategories': 'Kelola kategori',
+      'addCategory': 'Tambah Kategori',
+      'categoryNameLabel': 'Nama Kategori',
+      'colorHexLabel': 'Warna (Hex)',
+      'iconLabel': 'Nama Ikon',
+      'categoryCreated': 'Kategori berhasil dibuat',
+      'categoryExists': 'Kategori sudah ada',
+      'categoryNameRequired': 'Nama kategori wajib diisi',
+      'categoryNameTooLong': 'Nama kategori terlalu panjang',
+      'invalidColorHex': 'Hex warna tidak valid, gunakan format #RRGGBB',
       'confirmDeleteTitle': 'Hapus Transaksi',
       'confirmDeleteBody': 'Transaksi ini akan dihapus permanen. Lanjutkan?',
       'cancelLabel': 'Batal',
@@ -187,6 +207,16 @@ class AppLocalizations {
   String get restoreCompleted => _t('restoreCompleted');
   String get restoreConfirmTitle => _t('restoreConfirmTitle');
   String get restoreConfirmBody => _t('restoreConfirmBody');
+  String get manageCategories => _t('manageCategories');
+  String get addCategory => _t('addCategory');
+  String get categoryNameLabel => _t('categoryNameLabel');
+  String get colorHexLabel => _t('colorHexLabel');
+  String get iconLabel => _t('iconLabel');
+  String get categoryCreated => _t('categoryCreated');
+  String get categoryExists => _t('categoryExists');
+  String get categoryNameRequired => _t('categoryNameRequired');
+  String get categoryNameTooLong => _t('categoryNameTooLong');
+  String get invalidColorHex => _t('invalidColorHex');
   String get cancelLabel => _t('cancelLabel');
   String get deleteActionLabel => _t('deleteActionLabel');
   String get confirmDeleteTitle => _t('confirmDeleteTitle');

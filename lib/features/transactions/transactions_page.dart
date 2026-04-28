@@ -34,7 +34,16 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
     return ErrorBoundary(
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.transactionsTitle)),
+        appBar: AppBar(
+          title: Text(l10n.transactionsTitle),
+          actions: [
+            IconButton(
+              onPressed: () => _showCreateCategoryDialog(context),
+              tooltip: l10n.manageCategories,
+              icon: const Icon(Icons.category_outlined),
+            ),
+          ],
+        ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _showCreateForm(context),
           label: Text(l10n.addTransaction),
@@ -47,9 +56,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
               if (state.error == null) {
                 return;
               }
+              final message = state.error!.contains('Category already exists')
+                  ? l10n.categoryExists
+                  : state.error!;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.error!),
+                  content: Text(message),
                   backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
@@ -315,9 +327,20 @@ class _TransactionsPageState extends State<TransactionsPage> {
                         },
                       )
                     else
-                      TextFormField(
-                        enabled: false,
-                        decoration: InputDecoration(labelText: l10n.categoryLabel, hintText: 'General'),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            enabled: false,
+                            decoration: InputDecoration(labelText: l10n.categoryLabel, hintText: '#1'),
+                          ),
+                          const SizedBox(height: 8),
+                          OutlinedButton.icon(
+                            onPressed: () => _showCreateCategoryDialog(sheetContext),
+                            icon: const Icon(Icons.add),
+                            label: Text(l10n.addCategory),
+                          ),
+                        ],
                       ),
                     const SizedBox(height: 12),
                     ListTile(
@@ -389,6 +412,77 @@ class _TransactionsPageState extends State<TransactionsPage> {
     );
   }
 
+  Future<void> _showCreateCategoryDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final formKey = GlobalKey<FormState>();
+    final nameCtrl = TextEditingController();
+    final colorCtrl = TextEditingController(text: '#0D3B66');
+    final iconCtrl = TextEditingController(text: 'wallet');
+
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.addCategory),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameCtrl,
+                  decoration: InputDecoration(labelText: l10n.categoryNameLabel),
+                  validator: (value) => _errorFromCode(l10n, Validators.categoryName(value)),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: colorCtrl,
+                  decoration: InputDecoration(labelText: l10n.colorHexLabel),
+                  validator: (value) => _errorFromCode(l10n, Validators.hexColor(value)),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: iconCtrl,
+                  decoration: InputDecoration(labelText: l10n.iconLabel),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancelLabel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+                final cubit = context.read<TransactionCubit>();
+                await cubit.createCategory(
+                      CategoryModel(
+                        id: null,
+                        name: nameCtrl.text.trim(),
+                        colorHex: colorCtrl.text.trim().isEmpty ? '#0D3B66' : colorCtrl.text.trim(),
+                        icon: iconCtrl.text.trim().isEmpty ? 'wallet' : iconCtrl.text.trim(),
+                      ),
+                    );
+                if (dialogContext.mounted && cubit.state.error == null) {
+                  Navigator.pop(dialogContext, true);
+                }
+              },
+              child: Text(l10n.saveLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (created == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.categoryCreated)));
+    }
+  }
+
   String? _errorFromCode(AppLocalizations l10n, String? code) {
     switch (code) {
       case 'amountRequired':
@@ -403,6 +497,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
         return l10n.dateRequired;
       case 'dateFutureNotAllowed':
         return l10n.dateFutureNotAllowed;
+      case 'categoryNameRequired':
+        return l10n.categoryNameRequired;
+      case 'categoryNameTooLong':
+        return l10n.categoryNameTooLong;
+      case 'invalidColorHex':
+        return l10n.invalidColorHex;
       default:
         return null;
     }

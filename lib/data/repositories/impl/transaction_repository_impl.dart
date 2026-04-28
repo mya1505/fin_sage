@@ -17,6 +17,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<List<CategoryModel>> fetchCategories() => _local.getCategories();
 
   @override
+  Future<void> saveCategory(CategoryModel category) => _local.saveCategory(category);
+
+  @override
   Future<void> saveTransaction(TransactionModel transaction) => _local.saveTransaction(transaction);
 
   @override

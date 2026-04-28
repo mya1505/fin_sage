@@ -26,4 +26,27 @@ class Validators {
     }
     return null;
   }
+
+  static String? categoryName(String? input) {
+    final value = input?.trim() ?? '';
+    if (value.isEmpty) {
+      return 'categoryNameRequired';
+    }
+    if (value.length > 30) {
+      return 'categoryNameTooLong';
+    }
+    return null;
+  }
+
+  static String? hexColor(String? input) {
+    final value = (input ?? '').trim();
+    final regex = RegExp(r'^#[0-9a-fA-F]{6}$');
+    if (value.isEmpty) {
+      return null;
+    }
+    if (!regex.hasMatch(value)) {
+      return 'invalidColorHex';
+    }
+    return null;
+  }
 }

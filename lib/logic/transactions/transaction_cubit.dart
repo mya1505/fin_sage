@@ -78,4 +78,14 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(state.copyWith(error: e.toString()));
     }
   }
+
+  Future<void> createCategory(CategoryModel model) async {
+    emit(state.copyWith(error: null));
+    try {
+      await _repo.saveCategory(model);
+      await loadTransactions();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
 }

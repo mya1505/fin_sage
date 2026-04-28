@@ -69,6 +69,22 @@ class LocalDatabaseDataSource {
     return rows.map(CategoryModel.fromMap).toList();
   }
 
+  Future<void> saveCategory(CategoryModel category) async {
+    final db = await _database();
+    final normalizedName = category.name.trim().toLowerCase();
+    final existing = await db.query(
+      'categories',
+      where: 'lower(name) = ?',
+      whereArgs: [normalizedName],
+      limit: 1,
+    );
+    if (existing.isNotEmpty) {
+      throw StateError('Category already exists');
+    }
+
+    await db.insert('categories', category.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
   Future<List<BudgetModel>> getBudgets() async {
     final db = await _database();
     final rows = await db.query('budgets', orderBy: 'month DESC');
