@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:fin_sage/data/repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,7 +32,7 @@ class AuthCubit extends Cubit<AuthState> {
       final signedIn = await _repo.isSignedIn();
       emit(state.copyWith(status: signedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated));
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.unauthenticated, errorMessage: e.toString()));
+      emit(state.copyWith(status: AuthStatus.unauthenticated, errorMessage: mapErrorMessage(e)));
     }
   }
 
@@ -41,7 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
       final success = await _repo.signInWithGoogle();
       emit(state.copyWith(status: success ? AuthStatus.authenticated : AuthStatus.unauthenticated));
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.toString()));
+      emit(state.copyWith(status: AuthStatus.error, errorMessage: mapErrorMessage(e)));
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
 import 'package:fin_sage/data/repositories/impl/backup_repository_impl.dart';
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:mocktail/mocktail.dart';
@@ -53,12 +54,25 @@ void main() {
   });
 
   test('restoreFromFile downloads bytes and replaces local database file', () async {
-    when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => [9, 8, 7]);
-    when(() => local.replaceDatabaseFile([9, 8, 7])).thenAnswer((_) async {});
+    final validBytes = List<int>.generate(1024, (i) => i % 255);
+    when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => validBytes);
+    when(() => local.replaceDatabaseFile(validBytes)).thenAnswer((_) async {});
 
     await repository.restoreFromFile('file-1');
 
     verify(() => remote.downloadBackup('file-1')).called(1);
-    verify(() => local.replaceDatabaseFile([9, 8, 7])).called(1);
+    verify(() => local.replaceDatabaseFile(validBytes)).called(1);
+  });
+
+  test('restoreFromFile throws when backup file is invalid', () async {
+    when(() => remote.downloadBackup('file-1')).thenAnswer((_) async => [1, 2, 3]);
+
+    expect(
+      () => repository.restoreFromFile('file-1'),
+      throwsA(
+        isA<AppException>().having((e) => e.code, 'code', 'backup_invalid_file'),
+      ),
+    );
+    verifyNever(() => local.replaceDatabaseFile(any()));
   });
 }

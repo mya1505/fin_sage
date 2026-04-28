@@ -68,6 +68,7 @@
   "restoreCompleted": "Restore completed successfully",
   "restoreConfirmTitle": "Confirm Restore",
   "restoreConfirmBody": "Restoring backup will overwrite local data. Continue?",
+  "backupInvalidFile": "Backup file is invalid or corrupted",
   "signOutLabel": "Sign Out",
   "signOutConfirmBody": "You will be returned to login screen. Continue?",
   "resetLocalDataLabel": "Reset Local Data",

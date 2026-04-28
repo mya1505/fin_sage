@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:fin_sage/data/models/category_model.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
@@ -55,7 +56,7 @@ class TransactionCubit extends Cubit<TransactionState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      emit(state.copyWith(loading: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -65,7 +66,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       await _repo.saveTransaction(model);
       await loadTransactions();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -75,7 +76,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       await _repo.updateTransaction(model);
       await loadTransactions();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -85,7 +86,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       await _repo.deleteTransaction(id);
       await loadTransactions();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -95,7 +96,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       await _repo.saveCategory(model);
       await loadTransactions();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -105,7 +106,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       await _repo.archiveCategory(categoryId);
       await loadTransactions();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 }

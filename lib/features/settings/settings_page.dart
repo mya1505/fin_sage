@@ -35,9 +35,10 @@ class SettingsPage extends StatelessWidget {
             listener: (context, state) {
               final messenger = ScaffoldMessenger.of(context);
               if (state.error != null) {
+                final message = _errorMessage(l10n, state.error!);
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(state.error!),
+                    content: Text(message),
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ),
                 );
@@ -303,6 +304,14 @@ class SettingsPage extends StatelessWidget {
       return;
     }
     await context.read<DashboardCubit>().loadOverview();
+  }
+
+  String _errorMessage(AppLocalizations l10n, String rawMessage) {
+    final lower = rawMessage.toLowerCase();
+    if (lower.contains('backup file invalid or corrupted')) {
+      return l10n.backupInvalidFile;
+    }
+    return rawMessage;
   }
 }
 

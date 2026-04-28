@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/budget_model.dart';
 import 'package:fin_sage/data/repositories/budget_repository.dart';
@@ -39,7 +40,7 @@ class BudgetCubit extends Cubit<BudgetState> {
       emit(state.copyWith(loading: false, items: items));
       await _notifyExceededBudgets(items);
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      emit(state.copyWith(loading: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -49,7 +50,7 @@ class BudgetCubit extends Cubit<BudgetState> {
       await _repo.saveBudget(model);
       await loadBudgets();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -60,7 +61,7 @@ class BudgetCubit extends Cubit<BudgetState> {
       _notifiedBudgetIds.remove(budgetId);
       await loadBudgets();
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 

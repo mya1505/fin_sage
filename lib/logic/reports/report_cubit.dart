@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReportState extends Equatable {
@@ -29,7 +30,7 @@ class ReportCubit extends Cubit<ReportState> {
       await action();
       emit(state.copyWith(loading: false, success: true));
     } catch (e) {
-      emit(state.copyWith(loading: false, success: false, error: e.toString()));
+      emit(state.copyWith(loading: false, success: false, error: mapErrorMessage(e)));
     }
   }
 }

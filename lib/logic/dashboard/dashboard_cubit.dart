@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/data/repositories/transaction_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -80,7 +81,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      emit(state.copyWith(loading: false, error: mapErrorMessage(e)));
     }
   }
 }

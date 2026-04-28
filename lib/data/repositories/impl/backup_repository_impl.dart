@@ -1,6 +1,8 @@
+import 'package:fin_sage/core/errors/app_exception.dart';
 import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/remote/google_drive_datasource.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
+import 'package:fin_sage/core/utils/backup_file_validator.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:intl/intl.dart';
 
@@ -58,6 +60,12 @@ class BackupRepositoryImpl implements BackupRepository {
   @override
   Future<void> restoreFromFile(String fileId) async {
     final bytes = await _remote.downloadBackup(fileId);
+    if (!BackupFileValidator.isLikelyValidDatabaseBackup(bytes)) {
+      throw const AppException(
+        'Backup file invalid or corrupted',
+        code: 'backup_invalid_file',
+      );
+    }
     await _local.replaceDatabaseFile(bytes);
   }
 }

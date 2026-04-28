@@ -89,6 +89,7 @@ class AppLocalizations {
       'restoreCompleted': 'Restore completed successfully',
       'restoreConfirmTitle': 'Confirm Restore',
       'restoreConfirmBody': 'Restoring backup will overwrite local data. Continue?',
+      'backupInvalidFile': 'Backup file is invalid or corrupted',
       'signOutLabel': 'Sign Out',
       'signOutConfirmBody': 'You will be returned to login screen. Continue?',
       'resetLocalDataLabel': 'Reset Local Data',
@@ -190,6 +191,7 @@ class AppLocalizations {
       'restoreCompleted': 'Restore berhasil',
       'restoreConfirmTitle': 'Konfirmasi Restore',
       'restoreConfirmBody': 'Restore backup akan menimpa data lokal. Lanjutkan?',
+      'backupInvalidFile': 'File backup tidak valid atau rusak',
       'signOutLabel': 'Keluar',
       'signOutConfirmBody': 'Kamu akan kembali ke layar login. Lanjutkan?',
       'resetLocalDataLabel': 'Reset Data Lokal',
@@ -293,6 +295,7 @@ class AppLocalizations {
   String get restoreCompleted => _t('restoreCompleted');
   String get restoreConfirmTitle => _t('restoreConfirmTitle');
   String get restoreConfirmBody => _t('restoreConfirmBody');
+  String get backupInvalidFile => _t('backupInvalidFile');
   String get signOutLabel => _t('signOutLabel');
   String get signOutConfirmBody => _t('signOutConfirmBody');
   String get resetLocalDataLabel => _t('resetLocalDataLabel');

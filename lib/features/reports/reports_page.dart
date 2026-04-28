@@ -1,5 +1,6 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
+import 'package:fin_sage/core/widgets/loading_skeleton.dart';
 import 'package:fin_sage/features/reports/report_generator.dart';
 import 'package:fin_sage/data/models/transaction_model.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
@@ -35,6 +36,23 @@ class _ReportsPageState extends State<ReportsPage> {
         body: SafeArea(
           child: BlocBuilder<TransactionCubit, TransactionState>(
             builder: (context, txState) {
+              if (txState.loading) {
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: const [
+                    LoadingSkeleton(height: 46),
+                    SizedBox(height: 12),
+                    LoadingSkeleton(height: 34),
+                    SizedBox(height: 12),
+                    LoadingSkeleton(height: 120),
+                    SizedBox(height: 12),
+                    LoadingSkeleton(height: 48),
+                    SizedBox(height: 12),
+                    LoadingSkeleton(height: 48),
+                  ],
+                );
+              }
+
               final filteredTxs = _filterTransactions(txState.items);
               final income = filteredTxs
                   .where((tx) => tx.type == TransactionType.income)

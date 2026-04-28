@@ -3,6 +3,7 @@ import 'package:fin_sage/data/datasources/local/local_database_datasource.dart';
 import 'package:fin_sage/data/datasources/local/settings_storage.dart';
 import 'package:fin_sage/data/models/backup_file_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fin_sage/core/errors/error_mapper.dart';
 import 'package:fin_sage/data/repositories/backup_repository.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
 import 'package:flutter/material.dart';
@@ -123,7 +124,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -132,7 +133,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       await _settingsStorage.saveThemeMode(mode);
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -148,7 +149,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       emit(state.copyWith(locale: locale));
       await _settingsStorage.saveLocale(locale);
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -157,7 +158,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       await _settingsStorage.saveNotificationsEnabled(enabled);
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -184,7 +185,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+      emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -212,7 +213,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+      emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -228,7 +229,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: mapErrorMessage(e)));
     }
   }
 
@@ -253,7 +254,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+      emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -277,7 +278,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+      emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 
@@ -302,7 +303,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(backupInProgress: false, error: e.toString()));
+      emit(state.copyWith(backupInProgress: false, error: mapErrorMessage(e)));
     }
   }
 }
