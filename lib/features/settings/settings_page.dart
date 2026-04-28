@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
@@ -35,7 +36,7 @@ class SettingsPage extends StatelessWidget {
             listener: (context, state) {
               final messenger = ScaffoldMessenger.of(context);
               if (state.error != null) {
-                final message = _errorMessage(l10n, state.error!);
+                final message = localizeErrorMessage(l10n, state.error!);
                 messenger.showSnackBar(
                   SnackBar(
                     content: Text(message),
@@ -307,14 +308,6 @@ class SettingsPage extends StatelessWidget {
     await context.read<DashboardCubit>().loadOverview();
   }
 
-  String _errorMessage(AppLocalizations l10n, String rawMessage) {
-    return switch (rawMessage) {
-      'backup_invalid_file' => l10n.backupInvalidFile,
-      'backup_checksum_mismatch' => l10n.backupChecksumMismatch,
-      'google_auth_headers_unavailable' => l10n.googleAuthUnavailable,
-      _ => rawMessage,
-    };
-  }
 }
 
 class _AutoBackupStatus extends StatelessWidget {

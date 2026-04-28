@@ -1,4 +1,5 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
 import 'package:fin_sage/features/reports/report_generator.dart';
@@ -188,7 +189,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         if (state.error != null) ...[
                           const SizedBox(height: 24),
                           Text(
-                            state.error!,
+                            localizeErrorMessage(l10n, state.error!),
                             style: TextStyle(color: Theme.of(context).colorScheme.error),
                           ),
                         ],

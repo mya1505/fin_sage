@@ -1,4 +1,5 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/core/utils/validators.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
@@ -47,7 +48,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.error!),
+                  content: Text(localizeErrorMessage(l10n, state.error!)),
                   backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );

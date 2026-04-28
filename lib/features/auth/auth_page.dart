@@ -1,6 +1,7 @@
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/constants/google_auth_config.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/core/widgets/haptic_button.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
@@ -53,7 +54,10 @@ class AuthPage extends StatelessWidget {
                     ],
                     if (state.status == AuthStatus.error && state.errorMessage != null) ...[
                       const SizedBox(height: 16),
-                      Text(state.errorMessage!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      Text(
+                        localizeErrorMessage(l10n, state.errorMessage!),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      ),
                     ],
                   ],
                 ),

@@ -1,4 +1,5 @@
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/errors/error_localizer.dart';
 import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/core/utils/validators.dart';
 import 'package:fin_sage/core/widgets/loading_skeleton.dart';
@@ -58,12 +59,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
               if (state.error == null) {
                 return;
               }
-              final message = switch (state.error!) {
-                'category_already_exists' => l10n.categoryExists,
-                'category_in_use' => l10n.categoryInUse,
-                'default_category_archive_blocked' => l10n.defaultCategoryArchiveBlocked,
-                _ => state.error!,
-              };
+              final message = localizeErrorMessage(l10n, state.error!);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(message),
