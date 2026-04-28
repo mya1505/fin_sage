@@ -156,7 +156,8 @@ jobs:
       - name: Generate APK checksum
         run: |
           cp build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/${{ steps.meta.outputs.apk_name }}"
-          sha256sum "build/app/outputs/flutter-apk/${{ steps.meta.outputs.apk_name }}" > "build/app/outputs/flutter-apk/${{ steps.meta.outputs.apk_sha_name }}"
+          apk_hash="$(sha256sum "build/app/outputs/flutter-apk/${{ steps.meta.outputs.apk_name }}" | cut -d ' ' -f1)"
+          echo "$apk_hash  ${{ steps.meta.outputs.apk_name }}" > "build/app/outputs/flutter-apk/${{ steps.meta.outputs.apk_sha_name }}"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v7
@@ -188,6 +189,19 @@ jobs:
           APK file: \`${{ needs.android_build.outputs.apk_name }}\`
           SHA256: \`$checksum_value\`
           EOF
+
+      - name: Verify downloaded release artifact checksum
+        run: |
+          checksum_file="artifacts/finsage-release-apk/${{ needs.android_build.outputs.apk_sha_name }}"
+          apk_file="artifacts/finsage-release-apk/${{ needs.android_build.outputs.apk_name }}"
+          expected_hash="$(cut -d ' ' -f1 "$checksum_file")"
+          actual_hash="$(sha256sum "$apk_file" | cut -d ' ' -f1)"
+          if [ "$expected_hash" != "$actual_hash" ]; then
+            echo "Release artifact checksum mismatch."
+            echo "expected=$expected_hash"
+            echo "actual=$actual_hash"
+            exit 1
+          fi
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
