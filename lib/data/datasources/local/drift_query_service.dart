@@ -5,10 +5,12 @@ import 'package:fin_sage/core/constants/app_constants.dart';
 class DriftQueryService extends DatabaseConnectionUser {
   DriftQueryService()
       : super(
-          DatabaseConnection.fromExecutor(
-            SqfliteQueryExecutor.inDatabaseFolder(path: AppConstants.dbName),
-          ),
+          SqfliteQueryExecutor.inDatabaseFolder(path: AppConstants.dbName),
         );
+
+  @override
+  GeneratedDatabase get attachedDatabase =>
+      throw UnsupportedError('DriftQueryService is not attached to a GeneratedDatabase');
 
   Future<Map<String, double>> monthlySummary() async {
     const query = '''

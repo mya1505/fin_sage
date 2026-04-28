@@ -119,7 +119,11 @@ class DashboardPage extends StatelessWidget {
                           ),
                           _RouteChip(label: l10n.budgetsTitle, route: AppRoutes.budgets, svg: kHomeIconSvg),
                           _RouteChip(label: l10n.reportsTitle, route: AppRoutes.reports, svg: kReportIconSvg),
-                          _RouteChip(label: l10n.settingsTitle, route: AppRoutes.settings, svg: kHomeIconSvg),
+                          _RouteChip(
+                            label: l10n.settingsTitle,
+                            route: AppRoutes.settingsRoute,
+                            svg: kHomeIconSvg,
+                          ),
                         ],
                       ),
                     ],

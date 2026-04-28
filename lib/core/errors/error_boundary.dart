@@ -10,7 +10,7 @@ class ErrorBoundary extends StatefulWidget {
 }
 
 class _ErrorBoundaryState extends State<ErrorBoundary> {
-  FlutterExceptionHandler? _defaultOnError;
+  void Function(FlutterErrorDetails)? _defaultOnError;
 
   @override
   void initState() {

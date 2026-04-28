@@ -14,7 +14,7 @@ class AppRoutes {
   static const String transactions = '/transactions';
   static const String budgets = '/budgets';
   static const String reports = '/reports';
-  static const String settings = '/settings';
+  static const String settingsRoute = '/settings';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -30,7 +30,7 @@ class AppRoutes {
         return _material(const BudgetsPage());
       case reports:
         return _material(const ReportsPage());
-      case settings:
+      case settingsRoute:
         return _material(const SettingsPage());
       default:
         return _material(const AuthGatePage());
