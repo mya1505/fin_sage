@@ -1,6 +1,7 @@
 import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/lottie_placeholders.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/utils/extensions.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/logic/auth/auth_cubit.dart';
 import 'package:fin_sage/logic/budgets/budget_cubit.dart';
@@ -143,11 +144,14 @@ class SettingsPage extends StatelessWidget {
                     Text(l10n.noBackupFiles)
                   else
                     ...state.restorePreview.map((file) {
-                      final createdAt = file.createdAt?.toIso8601String() ?? '-';
+                      final createdAt = file.createdAt == null
+                          ? '-'
+                          : DateFormat.yMMMd(localeTag).add_Hm().format(file.createdAt!.toLocal());
+                      final fileSize = file.size.toReadableBytes();
                       return Card(
                         child: ListTile(
                           title: Text(file.name),
-                          subtitle: Text('$createdAt • ${file.size} bytes'),
+                          subtitle: Text('$createdAt • $fileSize'),
                           trailing: IconButton(
                             icon: const Icon(Icons.download),
                             onPressed: () => _confirmRestore(context, file.id),
