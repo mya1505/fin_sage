@@ -8,6 +8,7 @@ import 'package:fin_sage/core/constants/app_routes.dart';
 import 'package:fin_sage/core/constants/app_theme.dart';
 import 'package:fin_sage/core/di/service_locator.dart';
 import 'package:fin_sage/core/errors/error_boundary.dart';
+import 'package:fin_sage/core/utils/sentry_config.dart';
 import 'package:fin_sage/features/budgets/budget_notification_service.dart';
 import 'package:fin_sage/l10n/generated/app_localizations.dart';
 import 'package:fin_sage/features/settings/backup_scheduler.dart';
@@ -29,7 +30,9 @@ Future<void> main() async {
   await SentryFlutter.init(
     (options) {
       options.dsn = const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = _sentrySampleRate();
+      options.tracesSampleRate = SentryConfig.resolveTraceSampleRate(
+        const String.fromEnvironment('SENTRY_TRACE_SAMPLE_RATE', defaultValue: '0.1'),
+      );
     },
     appRunner: () {
       FlutterError.onError = (FlutterErrorDetails details) {
@@ -48,15 +51,6 @@ Future<void> main() async {
       );
     },
   );
-}
-
-double _sentrySampleRate() {
-  final raw = const String.fromEnvironment('SENTRY_TRACE_SAMPLE_RATE', defaultValue: '0.1');
-  final parsed = double.tryParse(raw);
-  if (parsed == null || parsed < 0 || parsed > 1) {
-    return 0.1;
-  }
-  return parsed;
 }
 
 class FinSageApp extends StatelessWidget {
