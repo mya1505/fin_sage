@@ -124,4 +124,86 @@ void main() {
     ],
     verify: (_) => verify(() => repository.deleteBudget(1)).called(1),
   );
+
+  test('loadBudgets should notify again after budget recovers then exceeds again', () async {
+    when(() => settingsStorage.loadNotificationsEnabled()).thenAnswer((_) async => true);
+    when(() => notificationService.notifyBudgetExceeded(budgetId: 1)).thenAnswer((_) async {});
+
+    var fetchCount = 0;
+    when(() => repository.fetchBudgets()).thenAnswer((_) async {
+      fetchCount++;
+      if (fetchCount == 1) {
+        return [
+          BudgetModel(
+            id: 1,
+            categoryId: 1,
+            month: DateTime(2026, 4),
+            limitAmount: 1000,
+            usedAmount: 1200,
+          ),
+        ];
+      }
+      if (fetchCount == 2) {
+        return [
+          BudgetModel(
+            id: 1,
+            categoryId: 1,
+            month: DateTime(2026, 4),
+            limitAmount: 1000,
+            usedAmount: 800,
+          ),
+        ];
+      }
+      return [
+        BudgetModel(
+          id: 1,
+          categoryId: 1,
+          month: DateTime(2026, 4),
+          limitAmount: 1000,
+          usedAmount: 1500,
+        ),
+      ];
+    });
+
+    final cubit = BudgetCubit(repository, notificationService, settingsStorage);
+    addTearDown(cubit.close);
+
+    await cubit.loadBudgets();
+    await cubit.loadBudgets();
+    await cubit.loadBudgets();
+
+    verify(() => notificationService.notifyBudgetExceeded(budgetId: 1)).called(2);
+  });
+
+  test('loadBudgets should reset dedup cache when notifications are disabled', () async {
+    var settingsCount = 0;
+    when(() => settingsStorage.loadNotificationsEnabled()).thenAnswer((_) async {
+      settingsCount++;
+      if (settingsCount == 2) {
+        return false;
+      }
+      return true;
+    });
+    when(() => repository.fetchBudgets()).thenAnswer((_) async {
+      return [
+        BudgetModel(
+          id: 1,
+          categoryId: 1,
+          month: DateTime(2026, 4),
+          limitAmount: 1000,
+          usedAmount: 1300,
+        ),
+      ];
+    });
+    when(() => notificationService.notifyBudgetExceeded(budgetId: 1)).thenAnswer((_) async {});
+
+    final cubit = BudgetCubit(repository, notificationService, settingsStorage);
+    addTearDown(cubit.close);
+
+    await cubit.loadBudgets();
+    await cubit.loadBudgets();
+    await cubit.loadBudgets();
+
+    verify(() => notificationService.notifyBudgetExceeded(budgetId: 1)).called(2);
+  });
 }

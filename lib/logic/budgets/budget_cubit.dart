@@ -67,12 +67,20 @@ class BudgetCubit extends Cubit<BudgetState> {
   Future<void> _notifyExceededBudgets(List<BudgetModel> items) async {
     final notificationsEnabled = await _settingsStorage.loadNotificationsEnabled();
     if (!notificationsEnabled) {
+      _notifiedBudgetIds.clear();
       return;
     }
 
     for (final budget in items) {
       final id = budget.id;
-      if (id == null || budget.usageRatio < 1 || _notifiedBudgetIds.contains(id)) {
+      if (id == null) {
+        continue;
+      }
+      if (budget.usageRatio < 1) {
+        _notifiedBudgetIds.remove(id);
+        continue;
+      }
+      if (_notifiedBudgetIds.contains(id)) {
         continue;
       }
       await _notificationService.notifyBudgetExceeded(budgetId: id);
