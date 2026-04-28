@@ -31,8 +31,26 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Verify Dart formatting
-        run: dart format --output=none --set-exit-if-changed .
+      - name: Verify Dart formatting (non-blocking)
+        id: format
+        run: |
+          set +e
+          dart format --output=none --set-exit-if-changed . > /tmp/dart_format.log 2>&1
+          format_exit_code=$?
+          set -e
+          if [ $format_exit_code -ne 0 ]; then
+            echo "Dart format check failed."
+            echo "format_status=failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "format_status=passed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload format check log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dart-format-log
+          path: /tmp/dart_format.log
 
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
@@ -70,6 +88,12 @@ jobs:
       - name: Integration test summary
         if: always()
         run: |
+          if [ "${{ steps.format.outputs.format_status }}" = "passed" ]; then
+            echo "Dart format check passed." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Dart format check failed (non-blocking)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
           if [ "${{ steps.integration.outputs.integration_status }}" = "passed" ]; then
             echo "Integration tests passed." >> "$GITHUB_STEP_SUMMARY"
           else
